@@ -5,6 +5,11 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include "logmanager.h"
+
+// 前向声明
+class AdminWindow;
+class UserWindow;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,20 +26,26 @@ public:
 public:
     void Init(void);
 
-
 private slots:
     void onLoginClicked();
     void onRegisterClicked();
+    void onLoginSuccess(bool isAdmin);
+    void onLoginFailed(const QString& errorMsg);
+    void onRegisterSuccess();
+    void onRegisterFailed(const QString& errorMsg);
+    void onAdminWindowClosed();
+    void onUserWindowClosed();
 
 private:
-    int loginAttempts;      //密码输入尝试次数
-    bool checkInputValid(const QString& user, const QString& pwd, QString& errMsg);
-    bool checkUser(const QString& user, const QString& pwd, bool& isAdmin, QString& errMsg);
-    bool registerUser(const QString& user, const QString& pwd, bool isAdmin, QString& errMsg);
+    void showAdminWindow();
+    void showUserWindow();
+    void clearInputFields();
 
 private:
     Ui::MainWindow *ui;
-
+    LogManager *logManager;  // 登录管理器
+    AdminWindow *adminWindow;  // 管理员窗口
+    UserWindow *userWindow;    // 用户窗口
     QString *uesrName;
     QString *userPassword;
     bool role;
