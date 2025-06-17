@@ -5,7 +5,8 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
-#include "logmanager.h"
+#include <QMouseEvent>
+#include "loginmanager.h"
 
 // 前向声明
 class AdminWindow;
@@ -25,6 +26,10 @@ public:
 
 public:
     void Init(void);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+
 
 private slots:
     void onLoginClicked();
@@ -35,6 +40,7 @@ private slots:
     void onRegisterFailed(const QString& errorMsg);
     void onAdminWindowClosed();
     void onUserWindowClosed();
+    void onMaximizeClicked();
 
 private:
     void showAdminWindow();
@@ -43,11 +49,15 @@ private:
 
 private:
     Ui::MainWindow *ui;
-    LogManager *logManager;  // 登录管理器
+    LoginManager *logManager;  // 登录管理器
     AdminWindow *adminWindow;  // 管理员窗口
     UserWindow *userWindow;    // 用户窗口
-    QString *uesrName;
-    QString *userPassword;
     bool role;
+    // 窗口拖拽
+    bool m_dragging = false;    //窗口移动标志
+    QPoint m_dragPosition;      //窗口移动位置
+    // 窗口最大化
+    bool m_isMaximized = false; //窗口最大化标志
+    QRect m_normalGeometry;     //窗口正常大小
 };
 #endif // MAINWINDOW_H

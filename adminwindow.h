@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
+#include "ui_adminwindow.h"
 
 class AdminWindow : public QMainWindow
 {
@@ -27,16 +28,7 @@ private slots:
     void onCloseClicked();
 
 private:
-    void setupUI();
-    void createMenuBar();
-
-private:
-    QWidget *centralWidget;
-    QLabel *welcomeLabel;
-    QPushButton *userManagementBtn;
-    QPushButton *systemSettingsBtn;
-    QPushButton *logoutBtn;
-    QPushButton *closeBtn;
+    Ui::AdminWindow *ui;
 };
 
 #endif // ADMINWINDOW_H 

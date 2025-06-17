@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
+#include "ui_userwindow.h"
 
 class UserWindow : public QMainWindow
 {
@@ -27,16 +28,7 @@ private slots:
     void onCloseClicked();
 
 private:
-    void setupUI();
-    void createMenuBar();
-
-private:
-    QWidget *centralWidget;
-    QLabel *welcomeLabel;
-    QPushButton *networkMonitorBtn;
-    QPushButton *personalSettingsBtn;
-    QPushButton *logoutBtn;
-    QPushButton *closeBtn;
+    Ui::UserWindow *ui;
 };
 
 #endif // USERWINDOW_H 

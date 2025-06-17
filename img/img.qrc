@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>IOT.png</file>
+        <file>IOTmanagement.png</file>
+        <file>monitorcenter.png</file>
+    </qresource>
+</RCC>

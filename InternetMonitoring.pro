@@ -17,21 +17,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     adminwindow.cpp \
-    logmanager.cpp \
+    loginmanager.cpp \
     main.cpp \
     mainwindow.cpp \
     userwindow.cpp
 
 HEADERS += \
     adminwindow.h \
-    logmanager.h \
+    loginmanager.h \
     mainwindow.h \
     userwindow.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    adminwindow.ui \
+    userwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    img/img.qrc

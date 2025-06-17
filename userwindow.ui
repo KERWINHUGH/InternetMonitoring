@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UserWindow</class>
+ <widget class="QMainWindow" name="UserWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>用户控制台</string>
+  </property>
+  <property name="fixedSize" stdset="0">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="30,0,0,0">
+      <item>
+       <widget class="QLabel" name="welcomeLabel">
+        <property name="styleSheet">
+         <string notr="true">QLabel { font-size: 24px; font-weight: bold; color: #27ae60; margin: 20px; }</string>
+        </property>
+        <property name="text">
+         <string>欢迎使用网络监控系统</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="buttonLayout">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="networkMonitorBtn">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton { 
+    background-color: #27ae60; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 16px; 
+    font-weight: bold; 
+} 
+QPushButton:hover { 
+    background-color: #229954; 
+} 
+QPushButton:pressed { 
+    background-color: #1e8449; 
+}</string>
+          </property>
+          <property name="text">
+           <string>网络监控</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="personalSettingsBtn">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton { 
+    background-color: #f39c12; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 16px; 
+    font-weight: bold; 
+} 
+QPushButton:hover { 
+    background-color: #e67e22; 
+} 
+QPushButton:pressed { 
+    background-color: #d35400; 
+}</string>
+          </property>
+          <property name="text">
+           <string>个人设置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>17</width>
+          <height>37</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="bottomLayout">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="logoutBtn">
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton { 
+    background-color: #95a5a6; 
+    color: white; 
+    border: none; 
+    border-radius: 6px; 
+    font-size: 14px; 
+} 
+QPushButton:hover { 
+    background-color: #7f8c8d; 
+}</string>
+          </property>
+          <property name="text">
+           <string>退出登录</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="closeBtn">
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton { 
+    background-color: #34495e; 
+    color: white; 
+    border: none; 
+    border-radius: 6px; 
+    font-size: 14px; 
+} 
+QPushButton:hover { 
+    background-color: #2c3e50; 
+}</string>
+          </property>
+          <property name="text">
+           <string>关闭程序</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="action_logout"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_function">
+    <property name="title">
+     <string>功能</string>
+    </property>
+    <addaction name="action_monitor"/>
+    <addaction name="action_settings"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_function"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_logout">
+   <property name="text">
+    <string>退出登录</string>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>退出程序</string>
+   </property>
+  </action>
+  <action name="action_monitor">
+   <property name="text">
+    <string>网络监控</string>
+   </property>
+  </action>
+  <action name="action_settings">
+   <property name="text">
+    <string>个人设置</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
