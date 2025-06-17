@@ -59,6 +59,7 @@ private:
     QPoint dragPosition;
     RegisterWindow *registerWindow;
     ForgetPasswordWindow *forgetPasswordWindow;
+    QString currentUsername;   // 当前登录用户名
 
     void initUI();
     void setupConnections();

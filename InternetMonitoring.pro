@@ -16,30 +16,38 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    adminwindow.cpp \
-    databasemanager.cpp \
-    forgetpasswordwindow.cpp \
-    loginmanager.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    registerwindow.cpp \
-    userwindow.cpp
+    src/adminwindow.cpp \
+    src/databasemanager.cpp \
+    src/databaseviewer.cpp \
+    src/dataviewer.cpp \
+    src/forgetpasswordwindow.cpp \
+    src/loginmanager.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/profilewindow.cpp \
+    src/registerwindow.cpp \
+    src/userwindow.cpp \
+    src/test_database.cpp \
+    src/db_test.cpp
 
 HEADERS += \
-    adminwindow.h \
-    databasemanager.h \
-    forgetpasswordwindow.h \
-    loginmanager.h \
-    mainwindow.h \
-    registerwindow.h \
-    userwindow.h
+    include/adminwindow.h \
+    include/databasemanager.h \
+    include/databaseviewer.h \
+    include/dataviewer.h \
+    include/forgetpasswordwindow.h \
+    include/loginmanager.h \
+    include/mainwindow.h \
+    include/profilewindow.h \
+    include/registerwindow.h \
+    include/userwindow.h
 
 FORMS += \
-    forgetpasswordwindow.ui \
-    mainwindow.ui \
-    adminwindow.ui \
-    registerwindow.ui \
-    userwindow.ui
+    ui/forgetpasswordwindow.ui \
+    ui/mainwindow.ui \
+    ui/adminwindow.ui \
+    ui/registerwindow.ui \
+    ui/userwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -47,4 +55,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    img/img.qrc
+    resources/img/img.qrc
+
+# 包含目录
+INCLUDEPATH += include/

@@ -235,6 +235,9 @@ void MainWindow::onRegisterClicked()
  */
 void MainWindow::onLoginSuccess(bool isAdmin)
 {
+    // 获取当前登录的用户名
+    currentUsername = ui->editUserAccount->text().trimmed();
+    
     QMessageBox::information(this, "登录成功", 
         isAdmin ? "管理员登录成功" : "用户登录成功");
     
@@ -248,7 +251,7 @@ void MainWindow::onLoginSuccess(bool isAdmin)
         adminWindow->show();
     } else {
         if (!userWindow) {
-            userWindow = new UserWindow();
+            userWindow = new UserWindow(currentUsername);
             connect(userWindow, &UserWindow::windowClosed, 
                     this, &MainWindow::onUserWindowClosed);
         }

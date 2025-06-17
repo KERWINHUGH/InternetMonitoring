@@ -2,9 +2,12 @@
 #include "ui_userwindow.h"
 #include <QApplication>
 #include <QAction>
+#include <QMessageBox>
+#include "profilewindow.h"
+#include "dataviewer.h"
 
-UserWindow::UserWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::UserWindow)
+UserWindow::UserWindow(const QString& username, QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::UserWindow), currentUsername(username), profileWindow(nullptr), dataViewer(nullptr)
 {
     ui->setupUi(this);
     setFixedSize(800, 600);
@@ -27,14 +30,47 @@ UserWindow::UserWindow(QWidget *parent)
     statusBar()->showMessage("用户控制台已就绪");
 }
 
+UserWindow::~UserWindow()
+{
+    delete ui;
+    if (profileWindow) {
+        delete profileWindow;
+    }
+    if (dataViewer) {
+        delete dataViewer;
+    }
+}
+
 void UserWindow::onMonitoringClicked()
 {
-    QMessageBox::information(this, "网络监控", "网络监控功能正在开发中...");
+    // 获取用户角色
+    QString email, phone, nickname, role;
+    if (DatabaseManager::instance().getUserInfo(currentUsername, email, phone, nickname, role)) {
+        if (!dataViewer) {
+            dataViewer = new DataViewer(currentUsername, role, this);
+        }
+        dataViewer->show();
+        dataViewer->raise();
+        dataViewer->activateWindow();
+    } else {
+        QMessageBox::warning(this, "错误", "无法获取用户信息");
+    }
 }
 
 void UserWindow::onPersonalSettingsClicked()
 {
-    QMessageBox::information(this, "个人设置", "个人设置功能正在开发中...");
+    if (!profileWindow) {
+        profileWindow = new ProfileWindow(currentUsername, this);
+        connect(profileWindow, &ProfileWindow::profileUpdated, this, &UserWindow::onProfileUpdated);
+    }
+    profileWindow->show();
+    profileWindow->raise();
+    profileWindow->activateWindow();
+}
+
+void UserWindow::onProfileUpdated()
+{
+    QMessageBox::information(this, "成功", "个人信息已更新");
 }
 
 void UserWindow::onLogoutClicked()
@@ -54,9 +90,4 @@ void UserWindow::onCloseClicked()
     if (result == QMessageBox::Yes) {
         QApplication::quit();
     }
-}
-
-UserWindow::~UserWindow()
-{
-    delete ui;
 } 

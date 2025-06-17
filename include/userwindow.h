@@ -9,6 +9,10 @@
 #include <QHBoxLayout>
 #include <QWidget>
 
+// 前向声明
+class ProfileWindow;
+class DataViewer;
+
 namespace Ui {
 class UserWindow;
 }
@@ -18,7 +22,7 @@ class UserWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit UserWindow(QWidget *parent = nullptr);
+    explicit UserWindow(const QString& username = QString(), QWidget *parent = nullptr);
     ~UserWindow() override;
 
 signals:
@@ -29,9 +33,13 @@ private slots:
     void onPersonalSettingsClicked();
     void onLogoutClicked();
     void onCloseClicked();
+    void onProfileUpdated();
 
 private:
     Ui::UserWindow *ui;
+    QString currentUsername;
+    ProfileWindow *profileWindow;
+    DataViewer *dataViewer;
 };
 
 #endif // USERWINDOW_H 

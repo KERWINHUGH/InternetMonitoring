@@ -2,9 +2,12 @@
 #include "ui_adminwindow.h"
 #include <QApplication>
 #include <QAction>
+#include <QMessageBox>
+#include "databaseviewer.h"
+#include "dataviewer.h"
 
 AdminWindow::AdminWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::AdminWindow)
+    : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), dataViewer(nullptr)
 {
     ui->setupUi(this);
     setFixedSize(800, 600);
@@ -30,16 +33,32 @@ AdminWindow::AdminWindow(QWidget *parent)
 AdminWindow::~AdminWindow()
 {
     delete ui;
+    if (databaseViewer) {
+        delete databaseViewer;
+    }
+    if (dataViewer) {
+        delete dataViewer;
+    }
 }
 
 void AdminWindow::onUserManagementClicked()
 {
-    QMessageBox::information(this, "用户管理", "用户管理功能正在开发中...");
+    if (!dataViewer) {
+        dataViewer = new DataViewer("admin", "admin", this);
+    }
+    dataViewer->show();
+    dataViewer->raise();
+    dataViewer->activateWindow();
 }
 
 void AdminWindow::onSystemSettingsClicked()
 {
-    QMessageBox::information(this, "系统设置", "系统设置功能正在开发中...");
+    if (!databaseViewer) {
+        databaseViewer = new DatabaseViewer(this);
+    }
+    databaseViewer->show();
+    databaseViewer->raise();
+    databaseViewer->activateWindow();
 }
 
 void AdminWindow::onLogoutClicked()

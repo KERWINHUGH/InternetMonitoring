@@ -9,6 +9,10 @@
 #include <QHBoxLayout>
 #include <QWidget>
 
+// 前向声明
+class DatabaseViewer;
+class DataViewer;
+
 namespace Ui {
 class AdminWindow;
 }
@@ -32,6 +36,8 @@ private slots:
 
 private:
     Ui::AdminWindow *ui;
+    DatabaseViewer *databaseViewer;
+    DataViewer *dataViewer;
 };
 
 #endif // ADMINWINDOW_H 
