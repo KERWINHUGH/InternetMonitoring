@@ -1,8 +1,14 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "./ui_mainwindow.h"
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#include <QApplication>
+#include <QIcon>
 #include "loginmanager.h"
 #include "adminwindow.h"
 #include "userwindow.h"
+#include "registerwindow.h"
+#include "forgetpasswordwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,76 +16,217 @@ MainWindow::MainWindow(QWidget *parent)
     , logManager(new LoginManager(this))
     , adminWindow(nullptr)
     , userWindow(nullptr)
+    , registerWindow(nullptr)
+    , forgetPasswordWindow(nullptr)
+    , isPasswordVisible(false)
+    , isMaximized(false)
 {
     ui->setupUi(this);
-    Init();
+    initUI();
+    setupConnections();
 }
 
 /**
  * @brief 初始化主窗口界面
- * 
+ *
  * 该函数负责初始化主窗口的各种控件和信号槽连接：
  * 1. 连接窗口控制按钮（关闭、最小化、最大化）
  * 2. 设置输入框的占位符文本
  * 3. 连接登录和注册按钮的信号槽
  * 4. 连接 LoginManager 的信号槽
  */
-void MainWindow::Init()
+void MainWindow::initUI()
 {
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);    //使用Qt::FramelessWindowHint标志，完全取消窗口边框
-    // 连接窗口控制按钮信号槽
-    connect(ui->bntClose, &QPushButton::clicked, this, &QMainWindow::close);        // 关闭按钮
-    connect(ui->bntMin, &QPushButton::clicked, this, &QMainWindow::showMinimized);  // 最小化按钮
-    connect(ui->bntMax, &QPushButton::clicked, this, &QMainWindow::showMaximized);  // 最大化按钮
+    // 设置窗口属性 - 移除透明背景，保持无边框
+    setWindowFlags(Qt::FramelessWindowHint);
+    // setAttribute(Qt::WA_TranslucentBackground); // 注释掉透明背景
+
+    // 设置窗口标题和图标
+    setWindowTitle("物联网设备监控系统");
+    setWindowIcon(QIcon(":/img/IOT.png"));
+
+    // 设置窗口大小
+    resize(400, 500);
+    setFixedSize(400, 500);
+
+    // 设置样式表
+    setStyleSheet(R"(
+        QMainWindow {
+            background-color: #f0f0f0;
+            border: 2px solid #cccccc;
+            border-radius: 10px;
+        }
+        
+        QLabel#titleLabel {
+            color: #333333;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px;
+        }
+        
+        QLineEdit {
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+        
+        QLineEdit:focus {
+            border-color: #4CAF50;
+        }
+        
+        QPushButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        QPushButton:hover {
+            background-color: #45a049;
+        }
+        
+        QPushButton:pressed {
+            background-color: #3d8b40;
+        }
+        
+        QPushButton#btnMin, QPushButton#btnMax, QPushButton#btnClose {
+            background-color: transparent;
+            color: #666666;
+            border: none;
+            border-radius: 3px;
+            min-width: 30px;
+            max-width: 30px;
+            min-height: 30px;
+            max-height: 30px;
+        }
+        
+        QPushButton#btnMin:hover, QPushButton#btnMax:hover {
+            background-color: #e0e0e0;
+        }
+        
+        QPushButton#btnClose:hover {
+            background-color: #ff4444;
+            color: white;
+        }
+        
+        QPushButton#btnShowPassword {
+            background-color: #2196F3;
+            min-width: 60px;
+            max-width: 60px;
+        }
+        
+        QPushButton#btnShowPassword:hover {
+            background-color: #1976D2;
+        }
+        
+        QLabel {
+            color: #333333;
+            font-size: 14px;
+        }
+    )");
+
+    // 设置密码框属性
+    ui->editPassword->setEchoMode(QLineEdit::Password);
 
     // 设置输入框占位符文本
-    ui->editUserAccount->setPlaceholderText("请输入用户名");   // 用户名输入框提示
-    ui->editUserPassword->setPlaceholderText("请输入密码");     // 密码输入框提示
+    ui->editUserAccount->setPlaceholderText("请输入用户名");
+    ui->editPassword->setPlaceholderText("请输入密码");
 
-    // 连接功能按钮信号槽
-    connect(ui->bntLogin, &QPushButton::clicked, this, &MainWindow::onLoginClicked);
-    connect(ui->bntRegister, &QPushButton::clicked, this, &MainWindow::onRegisterClicked);
-    
+    // 设置输入验证器
+    QRegularExpression userRegExp("[a-zA-Z0-9_]{3,20}");
+    ui->editUserAccount->setValidator(new QRegularExpressionValidator(userRegExp, this));
+
+    QRegularExpression pwdRegExp(".{6,20}");
+    ui->editPassword->setValidator(new QRegularExpressionValidator(pwdRegExp, this));
+}
+
+void MainWindow::setupConnections()
+{
+    // 连接登录和注册按钮
+    connect(ui->btnLogin, &QPushButton::clicked, this, &MainWindow::onLoginClicked);
+    connect(ui->btnRegister, &QPushButton::clicked, this, &MainWindow::onRegisterClicked);
+    connect(ui->btnForgetPassword, &QPushButton::clicked, this, &MainWindow::onForgetPasswordClicked);
+
+    // 连接窗口控制按钮
+    connect(ui->btnMin, &QPushButton::clicked, this, &MainWindow::onMinClicked);
+    connect(ui->btnMax, &QPushButton::clicked, this, &MainWindow::onMaxClicked);
+    connect(ui->btnClose, &QPushButton::clicked, this, &MainWindow::onCloseClicked);
+    connect(ui->btnShowPassword, &QPushButton::clicked, this, &MainWindow::onShowPasswordClicked);
+
+    // 连接回车键
+    connect(ui->editUserAccount, &QLineEdit::returnPressed, this, &MainWindow::onLoginClicked);
+    connect(ui->editPassword, &QLineEdit::returnPressed, this, &MainWindow::onLoginClicked);
+
     // 连接 LoginManager 信号槽
     connect(logManager, &LoginManager::loginSuccess, this, &MainWindow::onLoginSuccess);
     connect(logManager, &LoginManager::loginFailed, this, &MainWindow::onLoginFailed);
     connect(logManager, &LoginManager::registerSuccess, this, &MainWindow::onRegisterSuccess);
     connect(logManager, &LoginManager::registerFailed, this, &MainWindow::onRegisterFailed);
+    connect(logManager, &LoginManager::sessionTimeout, this, &MainWindow::onSessionTimeout);
+    connect(logManager, &LoginManager::sessionWarning, this, &MainWindow::onSessionWarning);
+}
 
-    // 连接窗口最大化按钮信号槽
-    connect(ui->bntMax, &QPushButton::clicked, this, &MainWindow::onMaximizeClicked);
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton) {
+        move(event->globalPos() - dragPosition);
+        event->accept();
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    event->accept();
 }
 
 /**
  * @brief 登录按钮点击事件处理函数
- * 
+ *
  * 该函数负责处理用户登录逻辑：
  * 1. 获取用户输入的用户名和密码
  * 2. 委托给 LoginManager 处理登录逻辑
  */
 void MainWindow::onLoginClicked()
 {
-    QString user = ui->editUserAccount->text();    // 获取用户名
-    QString pwd = ui->editUserPassword->text();     // 获取密码
-    
-    // 委托给 LoginManager 处理登录
-    logManager->handleLogin(user, pwd);
+    QString username = ui->editUserAccount->text().trimmed();
+    QString password = ui->editPassword->text();
+
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "错误", "用户名和密码不能为空");
+        return;
+    }
+
+    logManager->handleLogin(username, password);
 }
 
 /**
  * @brief 注册按钮点击事件处理函数
- * 
+ *
  * 该函数负责处理用户注册逻辑：
  * 1. 获取用户输入的用户名和密码
  * 2. 委托给 LoginManager 处理注册逻辑
  */
 void MainWindow::onRegisterClicked()
 {
-    QString user = ui->editUserAccount->text();    // 获取用户名
-    QString pwd = ui->editUserPassword->text();     // 获取密码
-    
-    // 委托给 LoginManager 处理注册（默认为普通用户）
-    logManager->handleRegister(user, pwd, false);
+    if (!registerWindow) {
+        registerWindow = new RegisterWindow(this);
+        connect(registerWindow, &RegisterWindow::backToLogin, this, &MainWindow::onRegisterWindowBack);
+    }
+    this->hide();
+    registerWindow->show();
 }
 
 /**
@@ -88,18 +235,26 @@ void MainWindow::onRegisterClicked()
  */
 void MainWindow::onLoginSuccess(bool isAdmin)
 {
-    role = isAdmin;  // 设置用户角色
-    QMessageBox::information(this, "登录成功", isAdmin ? "管理员登录成功" : "用户登录成功");
+    QMessageBox::information(this, "登录成功", 
+        isAdmin ? "管理员登录成功" : "用户登录成功");
     
-    // 隐藏登录窗口
-    this->hide();
-    
-    // 根据用户角色跳转到相应界面
+    hide();
     if (isAdmin) {
-        showAdminWindow();
+        if (!adminWindow) {
+            adminWindow = new AdminWindow();
+            connect(adminWindow, &AdminWindow::windowClosed, 
+                    this, &MainWindow::onAdminWindowClosed);
+        }
+        adminWindow->show();
     } else {
-        showUserWindow();
+        if (!userWindow) {
+            userWindow = new UserWindow();
+            connect(userWindow, &UserWindow::windowClosed, 
+                    this, &MainWindow::onUserWindowClosed);
+        }
+        userWindow->show();
     }
+    clearInputFields();
 }
 
 /**
@@ -109,11 +264,9 @@ void MainWindow::onLoginSuccess(bool isAdmin)
 void MainWindow::onLoginFailed(const QString& errorMsg)
 {
     QMessageBox::warning(this, "登录失败", errorMsg);
-    
-    // 检查是否超过最大尝试次数
     if (logManager->getLoginAttempts() >= 3) {
         QMessageBox::critical(this, "错误", "尝试次数过多，程序将关闭");
-        qApp->quit();
+        QApplication::quit();
     }
 }
 
@@ -123,7 +276,7 @@ void MainWindow::onLoginFailed(const QString& errorMsg)
 void MainWindow::onRegisterSuccess()
 {
     QMessageBox::information(this, "注册成功", "请登录");
-    clearInputFields();  // 清空输入框
+    clearInputFields();
 }
 
 /**
@@ -136,30 +289,6 @@ void MainWindow::onRegisterFailed(const QString& errorMsg)
 }
 
 /**
- * @brief 显示管理员窗口
- */
-void MainWindow::showAdminWindow()
-{
-    if (!adminWindow) {
-        adminWindow = new AdminWindow();
-        connect(adminWindow, &AdminWindow::windowClosed, this, &MainWindow::onAdminWindowClosed);
-    }
-    adminWindow->show();
-}
-
-/**
- * @brief 显示用户窗口
- */
-void MainWindow::showUserWindow()
-{
-    if (!userWindow) {
-        userWindow = new UserWindow();
-        connect(userWindow, &UserWindow::windowClosed, this, &MainWindow::onUserWindowClosed);
-    }
-    userWindow->show();
-}
-
-/**
  * @brief 管理员窗口关闭处理
  */
 void MainWindow::onAdminWindowClosed()
@@ -167,9 +296,9 @@ void MainWindow::onAdminWindowClosed()
     if (adminWindow) {
         adminWindow->hide();
     }
-    this->show();  // 显示登录窗口
-    clearInputFields();  // 清空输入框
-    logManager->resetLoginAttempts();  // 重置登录尝试次数
+    show();
+    clearInputFields();
+    logManager->resetLoginAttempts();
 }
 
 /**
@@ -180,9 +309,9 @@ void MainWindow::onUserWindowClosed()
     if (userWindow) {
         userWindow->hide();
     }
-    this->show();  // 显示登录窗口
-    clearInputFields();  // 清空输入框
-    logManager->resetLoginAttempts();  // 重置登录尝试次数
+    show();
+    clearInputFields();
+    logManager->resetLoginAttempts();
 }
 
 /**
@@ -191,76 +320,13 @@ void MainWindow::onUserWindowClosed()
 void MainWindow::clearInputFields()
 {
     ui->editUserAccount->clear();
-    ui->editUserPassword->clear();
-}
-
-/**
- * @brief 窗口拖拽事件处理函数
- * 
- * 该函数负责处理窗口拖拽逻辑：
- * 1. 检查鼠标左键是否按下
- * 2. 如果鼠标左键按下，则设置窗口移动标志为true，并记录窗口移动位置
- **/
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_dragging = true;
-        m_dragPosition = event->globalPos() - this->frameGeometry().topLeft();
-        event->accept();
-    }
-}
-
-/**
- * @brief 窗口移动事件处理函数
- * 
- * 该函数负责处理窗口移动逻辑：
- * 1. 检查窗口是否正在拖拽
- * 2. 如果窗口正在拖拽，则移动窗口到鼠标当前位置
- **/
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPos() - m_dragPosition);
-        event->accept();
-    }
-}
-
-/**
- * @brief 窗口最大化按钮点击事件处理函数
- * 
- * 该函数负责处理窗口最大化逻辑：
- * 1. 检查窗口是否最大化
- * 2. 如果窗口未最大化，则记录当前窗口大小并最大化窗口
- * 3. 如果窗口已最大化，则恢复窗口到正常大小
- **/
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_dragging = false;
-    event->accept();
-}
-
-/**
- * @brief 窗口最大化按钮点击事件处理函数
- * 
- * 该函数负责处理窗口最大化逻辑：
- * 1. 检查窗口是否最大化
- * 2. 如果窗口未最大化，则记录当前窗口大小并最大化窗口
- * 3. 如果窗口已最大化，则恢复窗口到正常大小
- **/
-void MainWindow::onMaximizeClicked()
-{
-    if (!m_isMaximized) {
-        this->showMaximized();
-        m_isMaximized = true;
-    } else {
-        this->showNormal();
-        m_isMaximized = false;
-    }
+    ui->editPassword->clear();
+    ui->editUserAccount->setFocus();
 }
 
 /**
  * @brief 主窗口析构函数
- * 
+ *
  * 该函数负责清理资源：
  * 1. 释放UI对象内存
  * 2. 释放子窗口内存
@@ -274,4 +340,83 @@ MainWindow::~MainWindow()
     if (userWindow) {
         delete userWindow;
     }
+}
+
+void MainWindow::onShowPasswordClicked()
+{
+    isPasswordVisible = !isPasswordVisible;
+    ui->editPassword->setEchoMode(
+        isPasswordVisible ? QLineEdit::Normal : QLineEdit::Password);
+    ui->btnShowPassword->setText(isPasswordVisible ? "隐藏" : "显示");
+}
+
+void MainWindow::onMinClicked()
+{
+    showMinimized();
+}
+
+void MainWindow::onMaxClicked()
+{
+    if (isMaximized) {
+        showNormal();
+        ui->btnMax->setText("□");
+    } else {
+        showMaximized();
+        ui->btnMax->setText("❐");
+    }
+    isMaximized = !isMaximized;
+}
+
+void MainWindow::onCloseClicked()
+{
+    close();
+}
+
+void MainWindow::onSessionTimeout()
+{
+    if (adminWindow && adminWindow->isVisible()) {
+        adminWindow->close();
+    }
+    if (userWindow && userWindow->isVisible()) {
+        userWindow->close();
+    }
+    show();
+    QMessageBox::warning(this, "会话超时", "由于长时间未操作，您已被自动登出");
+    clearInputFields();
+}
+
+void MainWindow::onSessionWarning(int remainingSeconds)
+{
+    int minutes = remainingSeconds / 60;
+    int seconds = remainingSeconds % 60;
+    QString message = QString("您的会话将在 %1分%2秒 后超时，请及时保存工作。")
+                         .arg(minutes)
+                         .arg(seconds);
+    
+    QWidget* activeWindow = QApplication::activeWindow();
+    if (activeWindow) {
+        QMessageBox::warning(activeWindow, "会话即将超时", message);
+    }
+}
+
+void MainWindow::onRegisterWindowBack()
+{
+    if (registerWindow) registerWindow->hide();
+    this->show();
+}
+
+void MainWindow::onForgetPasswordClicked()
+{
+    if (!forgetPasswordWindow) {
+        forgetPasswordWindow = new ForgetPasswordWindow(this);
+        connect(forgetPasswordWindow, &ForgetPasswordWindow::backToLogin, this, &MainWindow::onForgetPasswordWindowBack);
+    }
+    this->hide();
+    forgetPasswordWindow->show();
+}
+
+void MainWindow::onForgetPasswordWindowBack()
+{
+    if (forgetPasswordWindow) forgetPasswordWindow->hide();
+    this->show();
 }

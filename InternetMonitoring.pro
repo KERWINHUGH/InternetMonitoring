@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,20 +17,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     adminwindow.cpp \
+    databasemanager.cpp \
+    forgetpasswordwindow.cpp \
     loginmanager.cpp \
     main.cpp \
     mainwindow.cpp \
+    registerwindow.cpp \
     userwindow.cpp
 
 HEADERS += \
     adminwindow.h \
+    databasemanager.h \
+    forgetpasswordwindow.h \
     loginmanager.h \
     mainwindow.h \
+    registerwindow.h \
     userwindow.h
 
 FORMS += \
+    forgetpasswordwindow.ui \
     mainwindow.ui \
     adminwindow.ui \
+    registerwindow.ui \
     userwindow.ui
 
 # Default rules for deployment.

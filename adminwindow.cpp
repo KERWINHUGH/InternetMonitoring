@@ -1,4 +1,5 @@
 #include "adminwindow.h"
+#include "ui_adminwindow.h"
 #include <QApplication>
 #include <QAction>
 
@@ -24,6 +25,11 @@ AdminWindow::AdminWindow(QWidget *parent)
     });
     // 状态栏
     statusBar()->showMessage("管理员控制台已就绪");
+}
+
+AdminWindow::~AdminWindow()
+{
+    delete ui;
 }
 
 void AdminWindow::onUserManagementClicked()
@@ -53,9 +59,4 @@ void AdminWindow::onCloseClicked()
     if (result == QMessageBox::Yes) {
         QApplication::quit();
     }
-}
-
-AdminWindow::~AdminWindow()
-{
-    delete ui;
 } 

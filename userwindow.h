@@ -8,7 +8,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
-#include "ui_userwindow.h"
+
+namespace Ui {
+class UserWindow;
+}
 
 class UserWindow : public QMainWindow
 {
@@ -16,13 +19,13 @@ class UserWindow : public QMainWindow
 
 public:
     explicit UserWindow(QWidget *parent = nullptr);
-    ~UserWindow();
+    ~UserWindow() override;
 
 signals:
     void windowClosed();  // 窗口关闭信号
 
 private slots:
-    void onNetworkMonitorClicked();
+    void onMonitoringClicked();
     void onPersonalSettingsClicked();
     void onLogoutClicked();
     void onCloseClicked();

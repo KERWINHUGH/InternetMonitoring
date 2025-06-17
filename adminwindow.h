@@ -8,7 +8,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
-#include "ui_adminwindow.h"
+
+namespace Ui {
+class AdminWindow;
+}
 
 class AdminWindow : public QMainWindow
 {
@@ -16,7 +19,7 @@ class AdminWindow : public QMainWindow
 
 public:
     explicit AdminWindow(QWidget *parent = nullptr);
-    ~AdminWindow();
+    ~AdminWindow() override;
 
 signals:
     void windowClosed();  // 窗口关闭信号
