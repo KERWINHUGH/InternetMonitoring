@@ -2,6 +2,7 @@
 #define REGISTERWINDOW_H
 
 #include <QMainWindow>
+#include "loginmanager.h"
 
 namespace Ui {
 class RegisterWindow;
@@ -14,6 +15,7 @@ class RegisterWindow : public QMainWindow
 public:
     explicit RegisterWindow(QWidget *parent = nullptr);
     ~RegisterWindow();
+    void setLoginManager(LoginManager* manager);
 
 signals:
     void registerSuccess();
@@ -23,9 +25,11 @@ signals:
 private slots:
     void onRegisterClicked();
     void onBackClicked();
+    void onRegisterResult(bool success, const QString& errorMsg = QString());
 
 private:
     Ui::RegisterWindow *ui;
+    LoginManager* loginManager = nullptr;
     void showError(const QString& msg);
 };
 

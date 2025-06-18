@@ -221,10 +221,17 @@ void MainWindow::onLoginClicked()
  */
 void MainWindow::onRegisterClicked()
 {
-    if (!registerWindow) {
-        registerWindow = new RegisterWindow(this);
-        connect(registerWindow, &RegisterWindow::backToLogin, this, &MainWindow::onRegisterWindowBack);
+    if (registerWindow) {
+        disconnect(registerWindow, nullptr, this, nullptr);
+        registerWindow->close();
+        registerWindow = nullptr;
     }
+    registerWindow = new RegisterWindow(this);
+    registerWindow->setLoginManager(logManager);
+    connect(registerWindow, &RegisterWindow::backToLogin, this, &MainWindow::onRegisterWindowBack);
+    connect(registerWindow, &RegisterWindow::registerSuccess, this, &MainWindow::onRegisterSuccess);
+    connect(registerWindow, &RegisterWindow::registerFailed, this, &MainWindow::onRegisterFailed);
+    connect(registerWindow, &QObject::destroyed, this, [this]() { registerWindow = nullptr; });
     this->hide();
     registerWindow->show();
 }
@@ -278,8 +285,13 @@ void MainWindow::onLoginFailed(const QString& errorMsg)
  */
 void MainWindow::onRegisterSuccess()
 {
+    if (registerWindow) {
+        disconnect(registerWindow, nullptr, this, nullptr);
+        registerWindow = nullptr;
+    }
     QMessageBox::information(this, "注册成功", "请登录");
     clearInputFields();
+    this->show();
 }
 
 /**
@@ -288,7 +300,8 @@ void MainWindow::onRegisterSuccess()
  */
 void MainWindow::onRegisterFailed(const QString& errorMsg)
 {
-    QMessageBox::warning(this, "注册失败", errorMsg);
+    // 不再弹窗，避免重复弹出
+    // QMessageBox::warning(this, "注册失败", errorMsg);
 }
 
 /**

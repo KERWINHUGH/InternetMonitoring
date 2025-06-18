@@ -18,6 +18,7 @@ public:
     // 用户登录相关
     void handleLogin(const QString& username, const QString& password);
     void handleRegister(const QString& username, const QString& password, bool isAdmin);
+    void handleRegister(const QString& username, const QString& password, const QString& email, const QString& phone, bool isAdmin);
     bool resetPassword(const QString& username, const QString& oldPassword,
                       const QString& newPassword);
 

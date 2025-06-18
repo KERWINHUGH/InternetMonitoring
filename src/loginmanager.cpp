@@ -171,6 +171,11 @@ void LoginManager::handleLogin(const QString& username, const QString& password)
 
 void LoginManager::handleRegister(const QString& username, const QString& password, bool isAdmin)
 {
+    handleRegister(username, password, QString(), QString(), isAdmin);
+}
+
+void LoginManager::handleRegister(const QString& username, const QString& password, const QString& email, const QString& phone, bool isAdmin)
+{
     // 输入验证
     QString errorMsg;
     if (!isUsernameValid(username, errorMsg)) {
@@ -181,11 +186,16 @@ void LoginManager::handleRegister(const QString& username, const QString& passwo
         emit registerFailed(errorMsg);
         return;
     }
-
+    if (!isEmailValid(email, errorMsg)) {
+        emit registerFailed(errorMsg);
+        return;
+    }
+    if (!isPhoneValid(phone, errorMsg)) {
+        emit registerFailed(errorMsg);
+        return;
+    }
     // 尝试注册
-    if (DatabaseManager::instance().addUser(username, password, 
-                                          QString(), QString(), username,
-                                          isAdmin ? "admin" : "user")) {
+    if (DatabaseManager::instance().addUser(username, password, email, phone, username, isAdmin ? "admin" : "user")) {
         emit registerSuccess();
     } else {
         emit registerFailed("注册失败，用户名可能已存在");
