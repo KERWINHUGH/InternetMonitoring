@@ -26,10 +26,12 @@ SOURCES += \
     src/profilewindow.cpp \
     src/registerwindow.cpp \
     src/userwindow.cpp \
-    src/test_database.cpp \
-    src/db_test.cpp\
     src/DeviceManagementWindow.cpp \
-    src/DeviceEditDialog.cpp
+    src/DeviceEditDialog.cpp \
+    src/NetworkMonitorWindow.cpp \
+    src/AlarmRuleManagementWindow.cpp \
+    src/AlarmDisplayWindow.cpp \
+    src/DataAnalysisWindow.cpp
 
 
 HEADERS += \
@@ -43,7 +45,11 @@ HEADERS += \
     include/registerwindow.h \
     include/userwindow.h\
     include/DeviceManagementWindow.h \
-    include/DeviceEditDialog.h
+    include/DeviceEditDialog.h \
+    include/NetworkMonitorWindow.h \
+    include/AlarmRuleManagementWindow.h \
+    include/AlarmDisplayWindow.h \
+    include/DataAnalysisWindow.h
 
 FORMS += \
     ui/DeviceManagementWindow.ui \
@@ -55,7 +61,10 @@ FORMS += \
     ui/mainwindow.ui \
     ui/adminwindow.ui \
     ui/registerwindow.ui \
-    ui/userwindow.ui
+    ui/userwindow.ui \
+    ui/AlarmRuleManagementWindow.ui \
+    ui/AlarmDisplayWindow.ui \
+    ui/DataAnalysisWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

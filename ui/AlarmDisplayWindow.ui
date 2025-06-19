@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AlarmDisplayWindow</class>
+ <widget class="QMainWindow" name="AlarmDisplayWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>告警展示</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="filterLayout">
+      <item>
+       <widget class="QLabel" name="deviceLabel">
+        <property name="text">
+         <string>设备：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="deviceComboBox"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="text">
+         <string>状态：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="statusComboBox"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="timeLabel">
+        <property name="text">
+         <string>时间：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateTimeEdit" name="startDateTimeEdit"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="toLabel">
+        <property name="text">
+         <string>至</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateTimeEdit" name="endDateTimeEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="alarmTabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <widget class="QWidget" name="notificationTab">
+       <attribute name="title">
+        <string>告警通知</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="notificationLayout">
+        <item>
+         <widget class="QTableWidget" name="notificationTable"/>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="notificationDetailText"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="recordTab">
+       <attribute name="title">
+        <string>告警记录</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="recordLayout">
+        <item>
+         <widget class="QTableWidget" name="recordTable"/>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="recordDetailText"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 

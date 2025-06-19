@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSqlDriver>
+#include <QFile>
 
 DatabaseManager::DatabaseManager(QObject *parent)
     : QObject(parent), connected(false)
@@ -45,11 +46,10 @@ bool DatabaseManager::dropTables()
 bool DatabaseManager::initDatabase()
 {
     if (connected) {
-        // 如果已连接，先断开旧连接
         QString connectionName = db.connectionName();
         db.close();
-        db = QSqlDatabase();  // 释放数据库连接
-        QSqlDatabase::removeDatabase(connectionName);  // 从连接池中移除
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase(connectionName);
         connected = false;
     }
 
@@ -57,6 +57,8 @@ bool DatabaseManager::initDatabase()
     QString dbPath = QDir::currentPath() + "/internetmonitoring.db";
     qDebug() << "程序实际使用的数据库路径:" << dbPath;
     db.setDatabaseName(dbPath);
+
+    bool dbExists = QFile::exists(dbPath);
 
     if (!db.open()) {
         setLastError("无法打开数据库: " + db.lastError().text());
@@ -66,12 +68,14 @@ bool DatabaseManager::initDatabase()
     connected = true;
     emit databaseConnected();
 
-    // 先删除所有表，再重新创建
-    if (!dropTables()) {
-        setLastError("删除旧表失败");
-        return false;
+    if (!dbExists) {
+        // 仅首次创建数据库时建表
+        if (!createTables()) {
+            setLastError("创建表失败");
+            return false;
+        }
     }
-    return createTables();
+    return true;
 }
 
 void DatabaseManager::setLastError(const QString& error)

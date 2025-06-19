@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NetworkMonitorWindow</class>
- <widget class="QMainWindow" name="NetworkMonitorWindow">
+ <class>DataAnalysisWindow</class>
+ <widget class="QMainWindow" name="DataAnalysisWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,16 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>数据监控</string>
+   <string>数据分析</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="deviceLayout">
+     <layout class="QHBoxLayout" name="selectLayout">
       <item>
        <widget class="QLabel" name="deviceLabel">
         <property name="text">
-         <string>选择设备：</string>
+         <string>设备：</string>
         </property>
        </widget>
       </item>
@@ -28,23 +28,19 @@
        <widget class="QComboBox" name="deviceComboBox"/>
       </item>
       <item>
-       <widget class="QLabel" name="realtimeLabel">
+       <widget class="QLabel" name="typeLabel">
         <property name="text">
-         <string>实时数据</string>
+         <string>类型：</string>
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QWidget" name="realtimeChartWidget" native="true"/>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="historyLayout">
       <item>
-       <widget class="QLabel" name="startLabel">
+       <widget class="QComboBox" name="typeComboBox"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="timeLabel">
         <property name="text">
-         <string>起始时间：</string>
+         <string>时间：</string>
         </property>
        </widget>
       </item>
@@ -52,9 +48,9 @@
        <widget class="QDateTimeEdit" name="startDateTimeEdit"/>
       </item>
       <item>
-       <widget class="QLabel" name="endLabel">
+       <widget class="QLabel" name="toLabel">
         <property name="text">
-         <string>结束时间：</string>
+         <string>至</string>
         </property>
        </widget>
       </item>
@@ -62,19 +58,26 @@
        <widget class="QDateTimeEdit" name="endDateTimeEdit"/>
       </item>
       <item>
+       <widget class="QPushButton" name="analysisButton">
+        <property name="text">
+         <string>分析</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="exportButton">
         <property name="text">
-         <string>导出数据</string>
+         <string>导出结果</string>
         </property>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="historyTable"/>
+     <widget class="QWidget" name="chartWidget" native="true"/>
     </item>
     <item>
-     <widget class="QWidget" name="historyChartWidget" native="true"/>
+     <widget class="QTableWidget" name="resultTable"/>
     </item>
    </layout>
   </widget>

@@ -41,6 +41,52 @@
      </layout>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="groupLayout">
+      <item>
+       <widget class="QLabel" name="groupByLabel">
+        <property name="text">
+         <string>分组方式：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="groupByComboBox">
+        <item>
+         <property name="text">
+          <string>类型</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>位置</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addGroupButton">
+        <property name="text">
+         <string>新建分组</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="renameGroupButton">
+        <property name="text">
+         <string>重命名分组</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteGroupButton">
+        <property name="text">
+         <string>删除分组</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QTableWidget" name="deviceTable">
       <column>
        <property name="text">

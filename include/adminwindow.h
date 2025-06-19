@@ -12,6 +12,10 @@
 // 前向声明
 class DatabaseViewer;
 class DeviceManagementWindow;
+class NetworkMonitorWindow;
+class AlarmRuleManagementWindow;
+class AlarmDisplayWindow;
+class DataAnalysisWindow;
 
 namespace Ui {
 class AdminWindow;
@@ -32,6 +36,10 @@ private slots:
     void onUserManagementClicked();
     void onSystemSettingsClicked();
     void onDeviceManagementClicked();
+    void onNetworkMonitorClicked();
+    void onAlarmRuleManagementClicked();
+    void onAlarmDisplayClicked();
+    void onDataAnalysisClicked();
     void onLogoutClicked();
     void onCloseClicked();
 
@@ -39,6 +47,10 @@ private:
     Ui::AdminWindow *ui;
     DatabaseViewer *databaseViewer;
     DeviceManagementWindow *deviceManagementWindow;
+    NetworkMonitorWindow *networkMonitorWindow;
+    AlarmRuleManagementWindow *alarmRuleManagementWindow;
+    AlarmDisplayWindow *alarmDisplayWindow;
+    DataAnalysisWindow *dataAnalysisWindow;
     QString currentUsername;
 };
 

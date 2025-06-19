@@ -5,9 +5,15 @@
 #include <QMessageBox>
 #include "databaseviewer.h"
 #include "DeviceManagementWindow.h"
+#include "NetworkMonitorWindow.h"
+#include "AlarmRuleManagementWindow.h"
+#include "AlarmDisplayWindow.h"
+#include "DataAnalysisWindow.h"
 
 AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), deviceManagementWindow(nullptr), currentUsername(currentUsername)
+    : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), deviceManagementWindow(nullptr),
+      networkMonitorWindow(nullptr), alarmRuleManagementWindow(nullptr), alarmDisplayWindow(nullptr), dataAnalysisWindow(nullptr),
+      currentUsername(currentUsername)
 {
     ui->setupUi(this);
     setFixedSize(800, 600);
@@ -19,6 +25,10 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     connect(ui->logoutBtn, &QPushButton::clicked, this, &AdminWindow::onLogoutClicked);
     connect(ui->closeBtn, &QPushButton::clicked, this, &AdminWindow::onCloseClicked);
     connect(ui->deviceManagementBtn, &QPushButton::clicked, this, &AdminWindow::onDeviceManagementClicked);
+    connect(ui->networkMonitorBtn, &QPushButton::clicked, this, &AdminWindow::onNetworkMonitorClicked);
+    connect(ui->alarmRuleManagementBtn, &QPushButton::clicked, this, &AdminWindow::onAlarmRuleManagementClicked);
+    connect(ui->alarmDisplayBtn, &QPushButton::clicked, this, &AdminWindow::onAlarmDisplayClicked);
+    connect(ui->dataAnalysisBtn, &QPushButton::clicked, this, &AdminWindow::onDataAnalysisClicked);
     // 菜单栏
     connect(ui->action_logout, &QAction::triggered, this, &AdminWindow::onLogoutClicked);
     connect(ui->action_exit, &QAction::triggered, this, &AdminWindow::onCloseClicked);
@@ -39,6 +49,18 @@ AdminWindow::~AdminWindow()
     }
     if (deviceManagementWindow) {
         delete deviceManagementWindow;
+    }
+    if (networkMonitorWindow) {
+        delete networkMonitorWindow;
+    }
+    if (alarmRuleManagementWindow) {
+        delete alarmRuleManagementWindow;
+    }
+    if (alarmDisplayWindow) {
+        delete alarmDisplayWindow;
+    }
+    if (dataAnalysisWindow) {
+        delete dataAnalysisWindow;
     }
 }
 
@@ -89,4 +111,44 @@ void AdminWindow::onDeviceManagementClicked()
     deviceManagementWindow->show();
     deviceManagementWindow->raise();
     deviceManagementWindow->activateWindow();
+}
+
+void AdminWindow::onNetworkMonitorClicked()
+{
+    if (!networkMonitorWindow) {
+        networkMonitorWindow = new NetworkMonitorWindow(this);
+    }
+    networkMonitorWindow->show();
+    networkMonitorWindow->raise();
+    networkMonitorWindow->activateWindow();
+}
+
+void AdminWindow::onAlarmRuleManagementClicked()
+{
+    if (!alarmRuleManagementWindow) {
+        alarmRuleManagementWindow = new AlarmRuleManagementWindow(this);
+    }
+    alarmRuleManagementWindow->show();
+    alarmRuleManagementWindow->raise();
+    alarmRuleManagementWindow->activateWindow();
+}
+
+void AdminWindow::onAlarmDisplayClicked()
+{
+    if (!alarmDisplayWindow) {
+        alarmDisplayWindow = new AlarmDisplayWindow(this);
+    }
+    alarmDisplayWindow->show();
+    alarmDisplayWindow->raise();
+    alarmDisplayWindow->activateWindow();
+}
+
+void AdminWindow::onDataAnalysisClicked()
+{
+    if (!dataAnalysisWindow) {
+        dataAnalysisWindow = new DataAnalysisWindow(this);
+    }
+    dataAnalysisWindow->show();
+    dataAnalysisWindow->raise();
+    dataAnalysisWindow->activateWindow();
 } 
