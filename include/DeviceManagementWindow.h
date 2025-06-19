@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include "DeviceEditDialog.h"
+#include "ui_DeviceManagementWindow.h"
 
 class DeviceManagementWindow : public QMainWindow
 {
@@ -19,10 +20,7 @@ private slots:
     void onDeleteDevice();
 
 private:
-    QTableWidget* deviceTable;
-    QPushButton* addDeviceButton;
-    QPushButton* editDeviceButton;
-    QPushButton* deleteDeviceButton;
+    Ui::DeviceManagementWindow *ui;
     bool isAdmin;
     QString currentUsername;
     int user_id;

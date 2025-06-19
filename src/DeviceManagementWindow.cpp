@@ -5,7 +5,7 @@
 #include <QHBoxLayout>
 
 DeviceManagementWindow::DeviceManagementWindow(const QString& currentUsername, bool isAdmin, QWidget *parent)
-    : QMainWindow(parent), isAdmin(isAdmin), currentUsername(currentUsername), user_id(-1)
+    : QMainWindow(parent), isAdmin(isAdmin), currentUsername(currentUsername), user_id(-1), ui(new Ui::DeviceManagementWindow)
 {
     DatabaseManager::instance().getUserIdByUsername(currentUsername, user_id);
     setupUi();
@@ -15,53 +15,39 @@ DeviceManagementWindow::DeviceManagementWindow(const QString& currentUsername, b
 
 void DeviceManagementWindow::setupUi()
 {
-    QWidget* central = new QWidget(this);
-    QVBoxLayout* mainLayout = new QVBoxLayout(central);
-
-    addDeviceButton = findChild<QPushButton*>("addDeviceButton");
-    editDeviceButton = findChild<QPushButton*>("editDeviceButton");
-    deleteDeviceButton = findChild<QPushButton*>("deleteDeviceButton");
-    deviceTable = findChild<QTableWidget*>("deviceTable");
-
-    if (!isAdmin) {
-        addDeviceButton->setVisible(false);
-        editDeviceButton->setVisible(false);
-        deleteDeviceButton->setVisible(false);
-    }
-
-    setCentralWidget(central);
+    ui->setupUi(this);
 }
 
 void DeviceManagementWindow::setupConnections()
 {
-    connect(addDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onAddDevice);
-    connect(editDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onEditDevice);
-    connect(deleteDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onDeleteDevice);
+    connect(ui->addDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onAddDevice);
+    connect(ui->editDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onEditDevice);
+    connect(ui->deleteDeviceButton, &QPushButton::clicked, this, &DeviceManagementWindow::onDeleteDevice);
 }
 
 void DeviceManagementWindow::loadDevices()
 {
-    deviceTable->setRowCount(0);
+    ui->deviceTable->setRowCount(0);
     auto devices = DatabaseManager::instance().getDevices();
     for (const QVariant& v : devices) {
         QVariantMap device = v.toMap();
-        int row = deviceTable->rowCount();
-        deviceTable->insertRow(row);
-        deviceTable->setItem(row, 0, new QTableWidgetItem(QString::number(device["device_id"].toInt())));
-        deviceTable->setItem(row, 1, new QTableWidgetItem(device["name"].toString()));
-        deviceTable->setItem(row, 2, new QTableWidgetItem(device["type"].toString()));
-        deviceTable->setItem(row, 3, new QTableWidgetItem(device["location"].toString()));
-        deviceTable->setItem(row, 4, new QTableWidgetItem(device["manufacturer"].toString()));
-        deviceTable->setItem(row, 5, new QTableWidgetItem(device["model"].toString()));
-        deviceTable->setItem(row, 6, new QTableWidgetItem(device["installation_date"].toString()));
+        int row = ui->deviceTable->rowCount();
+        ui->deviceTable->insertRow(row);
+        ui->deviceTable->setItem(row, 0, new QTableWidgetItem(QString::number(device["device_id"].toInt())));
+        ui->deviceTable->setItem(row, 1, new QTableWidgetItem(device["name"].toString()));
+        ui->deviceTable->setItem(row, 2, new QTableWidgetItem(device["type"].toString()));
+        ui->deviceTable->setItem(row, 3, new QTableWidgetItem(device["location"].toString()));
+        ui->deviceTable->setItem(row, 4, new QTableWidgetItem(device["manufacturer"].toString()));
+        ui->deviceTable->setItem(row, 5, new QTableWidgetItem(device["model"].toString()));
+        ui->deviceTable->setItem(row, 6, new QTableWidgetItem(device["installation_date"].toString()));
     }
 }
 
 int DeviceManagementWindow::getSelectedDeviceId() const
 {
-    int row = deviceTable->currentRow();
+    int row = ui->deviceTable->currentRow();
     if (row < 0) return -1;
-    return deviceTable->item(row, 0)->text().toInt();
+    return ui->deviceTable->item(row, 0)->text().toInt();
 }
 
 void DeviceManagementWindow::onAddDevice()
