@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataAnalysisPage</class>
+ <widget class="QWidget" name="DataAnalysisPage">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="optionLayout">
+     <item>
+      <widget class="QLabel" name="optionLabel">
+       <property name="text">
+        <string>分析选项：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="optionComboBox"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="chartWidget"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="exportBtn">
+     <property name="text">
+      <string>导出数据</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 

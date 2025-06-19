@@ -18,15 +18,24 @@ private slots:
     void onAddDevice();
     void onEditDevice();
     void onDeleteDevice();
+    void onAddGroup();
+    void onRenameGroup();
+    void onDeleteGroup();
+    void onGroupTypeChanged(int index);
+    void onGroupChanged(int index);
 
 private:
     Ui::DeviceManagementWindow *ui;
     bool isAdmin;
     QString currentUsername;
     int user_id;
+    QString currentGroupType;
+    int currentGroupId;
     void setupUi();
     void setupConnections();
     int getSelectedDeviceId() const;
+    void loadGroups();
+    void initGroupTypes();
 };
 
 #endif // DEVICEMANAGEMENTWINDOW_H 

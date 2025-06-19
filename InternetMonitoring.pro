@@ -52,10 +52,17 @@ HEADERS += \
     include/DataAnalysisWindow.h
 
 FORMS += \
+    ui/AlarmDisplayPage.ui \
+    ui/AlarmRuleManagementPage.ui \
+    ui/DataAnalysisPage.ui \
+    ui/DeviceManagementPage.ui \
     ui/DeviceManagementWindow.ui \
+    ui/NetworkMonitorPage.ui \
     ui/NetworkMonitorWindow.ui \
     ui/ProfileWindow.ui \
     ui/SystemSettingsDialog.ui \
+    ui/SystemSettingsPage.ui \
+    ui/UserManagementPage.ui \
     ui/UserManagementWindow.ui \
     ui/forgetpasswordwindow.ui \
     ui/mainwindow.ui \

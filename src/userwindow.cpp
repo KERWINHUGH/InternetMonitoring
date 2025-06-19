@@ -5,6 +5,18 @@
 #include <QMessageBox>
 #include "profilewindow.h"
 #include "databaseviewer.h"
+#include <QButtonGroup>
+
+class NetworkMonitorWidget : public QWidget {
+public:
+    NetworkMonitorWidget(QWidget* parent = nullptr) : QWidget(parent) {
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        QLabel* label = new QLabel("网络监控功能区（可集成原有窗口）", this);
+        label->setAlignment(Qt::AlignCenter);
+        label->setStyleSheet("font-size:18px;color:#27ae60;margin:40px;");
+        layout->addWidget(label);
+    }
+};
 
 UserWindow::UserWindow(const QString& username, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::UserWindow), currentUsername(username), profileWindow(nullptr), databaseViewer(nullptr)

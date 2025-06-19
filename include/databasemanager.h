@@ -70,6 +70,15 @@ public:
                 int user_id = -1, int device_id = -1);
     QVariantList getLogs(const QDateTime& startTime = QDateTime(), const QDateTime& endTime = QDateTime());
 
+    // 设备分组管理
+    QVariantList getDeviceGroups(const QString& groupType); // groupType: "类型"/"位置"/"自定义"
+    bool addDeviceGroup(const QString& groupName, const QString& groupType);
+    bool renameDeviceGroup(int groupId, const QString& newName);
+    bool deleteDeviceGroup(int groupId);
+    bool setDeviceGroup(int deviceId, int groupId);
+    QVariantList getDevicesByGroup(int groupId, bool isNullGroup = false);
+    QVariantList getAllDeviceGroups();
+
 signals:
     void databaseError(const QString& error);
     void databaseConnected();

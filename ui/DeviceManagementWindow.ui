@@ -50,18 +50,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="groupByComboBox">
-        <item>
-         <property name="text">
-          <string>类型</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>位置</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="groupTypeComboBox"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="groupComboBox"/>
       </item>
       <item>
        <widget class="QPushButton" name="addGroupButton">

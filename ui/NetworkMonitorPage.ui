@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NetworkMonitorPage</class>
+ <widget class="QWidget" name="NetworkMonitorPage">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="networkTableWidget"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="refreshNetworkBtn">
+     <property name="text">
+      <string>刷新网络状态</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 

@@ -41,7 +41,8 @@ private slots:
     void onAlarmDisplayClicked();
     void onDataAnalysisClicked();
     void onLogoutClicked();
-    void onCloseClicked();
+    void onExitClicked();
+    void smoothSwitchToPage(int pageIndex);
 
 private:
     Ui::AdminWindow *ui;

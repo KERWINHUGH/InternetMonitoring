@@ -55,7 +55,6 @@ bool DatabaseManager::initDatabase()
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     QString dbPath = QDir::currentPath() + "/internetmonitoring.db";
-    qDebug() << "程序实际使用的数据库路径:" << dbPath;
     db.setDatabaseName(dbPath);
 
     bool dbExists = QFile::exists(dbPath);
@@ -115,7 +114,12 @@ bool DatabaseManager::rollbackTransaction()
 bool DatabaseManager::createTables()
 {
     // 表结构与SQL脚本保持一致
-    return executeQuery("CREATE TABLE users ("
+    return executeQuery("CREATE TABLE device_groups ("
+                       "group_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                       "group_name TEXT NOT NULL,"
+                       "group_type TEXT NOT NULL" // 类型/位置/自定义
+                       ")")
+        && executeQuery("CREATE TABLE users ("
                        "user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                        "username TEXT UNIQUE NOT NULL,"
                        "password TEXT NOT NULL,"
@@ -131,7 +135,9 @@ bool DatabaseManager::createTables()
                        "location TEXT NOT NULL,"
                        "manufacturer TEXT,"
                        "model TEXT,"
-                       "installation_date DATE"
+                       "installation_date DATE,"
+                       "group_id INTEGER,"
+                       "FOREIGN KEY(group_id) REFERENCES device_groups(group_id)"
                        ")")
         && executeQuery("CREATE TABLE monitor_data ("
                        "data_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -531,4 +537,102 @@ QVariantList DatabaseManager::getLogs(const QDateTime& startTime, const QDateTim
         }
     }
     return logs;
+}
+
+QVariantList DatabaseManager::getDeviceGroups(const QString& groupType)
+{
+    QVariantList groups;
+    QSqlQuery query;
+    query.prepare("SELECT group_id, group_name FROM device_groups WHERE group_type=?");
+    query.addBindValue(groupType);
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap group;
+            group["group_id"] = query.value(0).toInt();
+            group["group_name"] = query.value(1).toString();
+            groups.append(group);
+        }
+    }
+    return groups;
+}
+
+bool DatabaseManager::addDeviceGroup(const QString& groupName, const QString& groupType)
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO device_groups (group_name, group_type) VALUES (?, ?)");
+    query.addBindValue(groupName);
+    query.addBindValue(groupType);
+    return query.exec();
+}
+
+bool DatabaseManager::renameDeviceGroup(int groupId, const QString& newName)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE device_groups SET group_name=? WHERE group_id=?");
+    query.addBindValue(newName);
+    query.addBindValue(groupId);
+    return query.exec();
+}
+
+bool DatabaseManager::deleteDeviceGroup(int groupId)
+{
+    // 先将该分组下设备的group_id置空
+    QSqlQuery q1;
+    q1.prepare("UPDATE devices SET group_id=NULL WHERE group_id=?");
+    q1.addBindValue(groupId);
+    q1.exec();
+    // 再删除分组
+    QSqlQuery q2;
+    q2.prepare("DELETE FROM device_groups WHERE group_id=?");
+    q2.addBindValue(groupId);
+    return q2.exec();
+}
+
+bool DatabaseManager::setDeviceGroup(int deviceId, int groupId)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE devices SET group_id=? WHERE device_id=?");
+    query.addBindValue(groupId);
+    query.addBindValue(deviceId);
+    return query.exec();
+}
+
+QVariantList DatabaseManager::getDevicesByGroup(int groupId, bool isNullGroup)
+{
+    QVariantList devices;
+    QSqlQuery query;
+    if (isNullGroup) {
+        query.prepare("SELECT device_id, name, type, location, manufacturer, model, installation_date FROM devices WHERE group_id IS NULL");
+    } else {
+        query.prepare("SELECT device_id, name, type, location, manufacturer, model, installation_date FROM devices WHERE group_id=?");
+        query.addBindValue(groupId);
+    }
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap device;
+            device["device_id"] = query.value(0).toInt();
+            device["name"] = query.value(1).toString();
+            device["type"] = query.value(2).toString();
+            device["location"] = query.value(3).toString();
+            device["manufacturer"] = query.value(4).toString();
+            device["model"] = query.value(5).toString();
+            device["installation_date"] = query.value(6).toString();
+            devices.append(device);
+        }
+    }
+    return devices;
+}
+
+QVariantList DatabaseManager::getAllDeviceGroups()
+{
+    QVariantList groups;
+    QSqlQuery query("SELECT group_id, group_name, group_type FROM device_groups");
+    while (query.next()) {
+        QVariantMap group;
+        group["group_id"] = query.value(0).toInt();
+        group["group_name"] = query.value(1).toString();
+        group["group_type"] = query.value(2).toString();
+        groups.append(group);
+    }
+    return groups;
 }
