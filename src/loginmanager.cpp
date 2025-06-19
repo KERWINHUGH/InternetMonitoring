@@ -156,14 +156,17 @@ void LoginManager::handleLogin(const QString& username, const QString& password)
     }
 
     // 尝试登录
+    int user_id;
     QString role;
-    if (DatabaseManager::instance().verifyUser(username, password, role)) {
+    if (DatabaseManager::instance().verifyUser(username, password, user_id, role)) {
         currentUsername = username;
         currentUserRole = role;
         resetSessionTimer();
+        DatabaseManager::instance().addLog("登录", "INFO", QString("用户 %1 登录成功").arg(username), user_id);
         emit loginSuccess(role == "admin");
         loginAttempts = 0;
     } else {
+        DatabaseManager::instance().addLog("登录", "WARN", QString("用户 %1 登录失败").arg(username));
         loginAttempts++;
         emit loginFailed("用户名或密码错误");
     }
@@ -196,8 +199,12 @@ void LoginManager::handleRegister(const QString& username, const QString& passwo
     }
     // 尝试注册
     if (DatabaseManager::instance().addUser(username, password, email, phone, username, isAdmin ? "admin" : "user")) {
+        int user_id;
+        DatabaseManager::instance().getUserIdByUsername(username, user_id);
+        DatabaseManager::instance().addLog("注册", "INFO", QString("用户 %1 注册成功").arg(username), user_id);
         emit registerSuccess();
     } else {
+        DatabaseManager::instance().addLog("注册", "WARN", QString("用户 %1 注册失败，用户名可能已存在").arg(username));
         emit registerFailed("注册失败，用户名可能已存在");
     }
 }
@@ -211,11 +218,16 @@ bool LoginManager::resetPassword(const QString& username, const QString& oldPass
         return false;
     }
 
+    int user_id;
     QString role;
-    if (!DatabaseManager::instance().verifyUser(username, oldPassword, role)) {
+    if (!DatabaseManager::instance().verifyUser(username, oldPassword, user_id, role)) {
         return false;
     }
-    return DatabaseManager::instance().updatePassword(username, newPassword);
+    if (DatabaseManager::instance().updatePassword(user_id, newPassword)) {
+        DatabaseManager::instance().addLog("密码修改", "INFO", QString("用户 %1 修改了密码").arg(username), user_id);
+        return true;
+    }
+    return false;
 }
 
 bool LoginManager::updateUserInfo(const QString& username, const QString& email,
@@ -227,26 +239,36 @@ bool LoginManager::updateUserInfo(const QString& username, const QString& email,
     if (!isPhoneValid(phone, errorMsg)) return false;
     if (!isNicknameValid(nickname, errorMsg)) return false;
 
-    return DatabaseManager::instance().updateUser(username, email, phone, nickname);
+    int user_id;
+    if (!DatabaseManager::instance().getUserIdByUsername(username, user_id)) {
+        return false;
+    }
+    if (DatabaseManager::instance().updateUser(user_id, email, phone, nickname)) {
+        DatabaseManager::instance().addLog("用户信息修改", "INFO", QString("用户 %1 修改了个人信息").arg(username), user_id);
+        return true;
+    }
+    return false;
 }
 
 bool LoginManager::getUserInfo(const QString& username, QString& email,
                              QString& phone, QString& nickname, QString& role)
 {
-    return DatabaseManager::instance().getUserInfo(username, email, phone, nickname, role);
+    int user_id;
+    if (!DatabaseManager::instance().getUserIdByUsername(username, user_id)) {
+        return false;
+    }
+    QString fetchedUsername;
+    return DatabaseManager::instance().getUserInfo(user_id, fetchedUsername, email, phone, nickname, role);
 }
 
 void LoginManager::logout()
 {
     if (!currentUsername.isEmpty()) {
-        // 记录登出日志
-        DatabaseManager::instance().addLog(
-            "登出",
-            QString("用户 %1 登出系统").arg(currentUsername),
-            currentUsername
-        );
+        int user_id;
+        if (DatabaseManager::instance().getUserIdByUsername(currentUsername, user_id)) {
+            DatabaseManager::instance().addLog("登出", "INFO", QString("用户 %1 登出系统").arg(currentUsername), user_id);
+        }
     }
-
     currentUsername.clear();
     currentUserRole.clear();
     sessionTimer->stop();

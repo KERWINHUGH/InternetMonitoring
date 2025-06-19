@@ -4,10 +4,10 @@
 #include <QAction>
 #include <QMessageBox>
 #include "databaseviewer.h"
-#include "dataviewer.h"
+#include "DeviceManagementWindow.h"
 
-AdminWindow::AdminWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), dataViewer(nullptr)
+AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), deviceManagementWindow(nullptr), currentUsername(currentUsername)
 {
     ui->setupUi(this);
     setFixedSize(800, 600);
@@ -18,6 +18,7 @@ AdminWindow::AdminWindow(QWidget *parent)
     connect(ui->systemSettingsBtn, &QPushButton::clicked, this, &AdminWindow::onSystemSettingsClicked);
     connect(ui->logoutBtn, &QPushButton::clicked, this, &AdminWindow::onLogoutClicked);
     connect(ui->closeBtn, &QPushButton::clicked, this, &AdminWindow::onCloseClicked);
+    connect(ui->deviceManagementBtn, &QPushButton::clicked, this, &AdminWindow::onDeviceManagementClicked);
     // 菜单栏
     connect(ui->action_logout, &QAction::triggered, this, &AdminWindow::onLogoutClicked);
     connect(ui->action_exit, &QAction::triggered, this, &AdminWindow::onCloseClicked);
@@ -36,19 +37,19 @@ AdminWindow::~AdminWindow()
     if (databaseViewer) {
         delete databaseViewer;
     }
-    if (dataViewer) {
-        delete dataViewer;
+    if (deviceManagementWindow) {
+        delete deviceManagementWindow;
     }
 }
 
 void AdminWindow::onUserManagementClicked()
 {
-    if (!dataViewer) {
-        dataViewer = new DataViewer("admin", "admin", this);
+    if (!databaseViewer) {
+        databaseViewer = new DatabaseViewer(this, QStringList() << "users");
     }
-    dataViewer->show();
-    dataViewer->raise();
-    dataViewer->activateWindow();
+    databaseViewer->show();
+    databaseViewer->raise();
+    databaseViewer->activateWindow();
 }
 
 void AdminWindow::onSystemSettingsClicked()
@@ -78,4 +79,14 @@ void AdminWindow::onCloseClicked()
     if (result == QMessageBox::Yes) {
         QApplication::quit();
     }
+}
+
+void AdminWindow::onDeviceManagementClicked()
+{
+    if (!deviceManagementWindow) {
+        deviceManagementWindow = new DeviceManagementWindow(currentUsername, true, this);
+    }
+    deviceManagementWindow->show();
+    deviceManagementWindow->raise();
+    deviceManagementWindow->activateWindow();
 } 

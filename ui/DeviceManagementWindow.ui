@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeviceManagementWindow</class>
+ <widget class="QMainWindow" name="DeviceManagementWindow">
+  <property name="windowTitle">
+   <string>设备管理</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="buttonLayout">
+      <item>
+       <widget class="QPushButton" name="addDeviceButton">
+        <property name="text">
+         <string>添加设备</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="editDeviceButton">
+        <property name="text">
+         <string>编辑设备</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteDeviceButton">
+        <property name="text">
+         <string>删除设备</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="deviceTable">
+      <column>
+       <property name="text">
+        <string>设备ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>名称</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>类型</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>位置</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>制造商</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>型号</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>安装日期</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 

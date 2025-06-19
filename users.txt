@@ -1,5 +1,0 @@
-1,1,user
-12,12,user
-123,1,user
-admin,admin,admin
-jack,123,user

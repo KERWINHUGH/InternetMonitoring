@@ -19,7 +19,6 @@ SOURCES += \
     src/adminwindow.cpp \
     src/databasemanager.cpp \
     src/databaseviewer.cpp \
-    src/dataviewer.cpp \
     src/forgetpasswordwindow.cpp \
     src/loginmanager.cpp \
     src/main.cpp \
@@ -28,21 +27,30 @@ SOURCES += \
     src/registerwindow.cpp \
     src/userwindow.cpp \
     src/test_database.cpp \
-    src/db_test.cpp
+    src/db_test.cpp\
+    src/DeviceManagementWindow.cpp \
+    src/DeviceEditDialog.cpp
+
 
 HEADERS += \
     include/adminwindow.h \
     include/databasemanager.h \
     include/databaseviewer.h \
-    include/dataviewer.h \
     include/forgetpasswordwindow.h \
     include/loginmanager.h \
     include/mainwindow.h \
     include/profilewindow.h \
     include/registerwindow.h \
-    include/userwindow.h
+    include/userwindow.h\
+    include/DeviceManagementWindow.h \
+    include/DeviceEditDialog.h
 
 FORMS += \
+    ui/DeviceManagementWindow.ui \
+    ui/NetworkMonitorWindow.ui \
+    ui/ProfileWindow.ui \
+    ui/SystemSettingsDialog.ui \
+    ui/UserManagementWindow.ui \
     ui/forgetpasswordwindow.ui \
     ui/mainwindow.ui \
     ui/adminwindow.ui \

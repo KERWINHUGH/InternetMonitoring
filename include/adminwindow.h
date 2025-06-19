@@ -11,7 +11,7 @@
 
 // 前向声明
 class DatabaseViewer;
-class DataViewer;
+class DeviceManagementWindow;
 
 namespace Ui {
 class AdminWindow;
@@ -22,7 +22,7 @@ class AdminWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit AdminWindow(QWidget *parent = nullptr);
+    explicit AdminWindow(const QString& currentUsername, QWidget *parent = nullptr);
     ~AdminWindow() override;
 
 signals:
@@ -31,13 +31,15 @@ signals:
 private slots:
     void onUserManagementClicked();
     void onSystemSettingsClicked();
+    void onDeviceManagementClicked();
     void onLogoutClicked();
     void onCloseClicked();
 
 private:
     Ui::AdminWindow *ui;
     DatabaseViewer *databaseViewer;
-    DataViewer *dataViewer;
+    DeviceManagementWindow *deviceManagementWindow;
+    QString currentUsername;
 };
 
 #endif // ADMINWINDOW_H 

@@ -251,7 +251,7 @@ void MainWindow::onLoginSuccess(bool isAdmin)
     hide();
     if (isAdmin) {
         if (!adminWindow) {
-            adminWindow = new AdminWindow();
+            adminWindow = new AdminWindow(currentUsername);
             connect(adminWindow, &AdminWindow::windowClosed, 
                     this, &MainWindow::onAdminWindowClosed);
         }

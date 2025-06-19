@@ -1,56 +1,71 @@
--- 物联网设备监控系统数据库初始化脚本
+-- 物联网设备监控系统数据库初始化脚本（新版，2024）
 
--- 创建用户表
+-- 用户表
 CREATE TABLE IF NOT EXISTS users (
-    username TEXT PRIMARY KEY,
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    email TEXT,
-    phone TEXT,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT UNIQUE NOT NULL,
     nickname TEXT,
     role TEXT NOT NULL
 );
 
--- 创建设备表
+-- 设备表
 CREATE TABLE IF NOT EXISTS devices (
-    device_id TEXT PRIMARY KEY,
+    device_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
-    location TEXT,
-    status TEXT DEFAULT 'offline'
+    location TEXT NOT NULL,
+    manufacturer TEXT,
+    model TEXT,
+    installation_date DATE
 );
 
--- 创建监控数据表
+-- 数据表
 CREATE TABLE IF NOT EXISTS monitor_data (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    device_id TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id INTEGER NOT NULL,
+    timestamp DATETIME NOT NULL,
     temperature REAL,
     humidity REAL,
-    cpu_usage REAL,
-    memory_usage REAL,
-    network_speed REAL,
+    light REAL,
+    -- 可扩展字段：如co2、pressure等
     FOREIGN KEY(device_id) REFERENCES devices(device_id)
 );
 
--- 创建告警表
-CREATE TABLE IF NOT EXISTS alarms (
-    alarm_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    device_id TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    type TEXT NOT NULL,
+-- 告警规则表
+CREATE TABLE IF NOT EXISTS alarm_rules (
+    rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id INTEGER NOT NULL,
     description TEXT NOT NULL,
-    level TEXT NOT NULL,
-    status TEXT DEFAULT 'unhandled',
+    condition TEXT NOT NULL,
+    action TEXT NOT NULL,
     FOREIGN KEY(device_id) REFERENCES devices(device_id)
 );
 
--- 创建系统日志表
+-- 告警记录表
+CREATE TABLE IF NOT EXISTS alarm_records (
+    alarm_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id INTEGER NOT NULL,
+    timestamp DATETIME NOT NULL,
+    content TEXT NOT NULL,
+    status TEXT NOT NULL,
+    note TEXT,
+    FOREIGN KEY(device_id) REFERENCES devices(device_id)
+);
+
+-- 系统日志表
 CREATE TABLE IF NOT EXISTS system_logs (
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    type TEXT NOT NULL,
+    timestamp DATETIME NOT NULL,
+    log_type TEXT NOT NULL,
+    log_level TEXT NOT NULL,
     content TEXT NOT NULL,
-    username TEXT NOT NULL
+    user_id INTEGER,
+    device_id INTEGER,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(device_id) REFERENCES devices(device_id)
 );
 
 -- 插入默认管理员账户 (密码: admin123)

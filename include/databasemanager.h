@@ -29,47 +29,46 @@ public:
 
     // 用户管理
     bool addUser(const QString& username, const QString& password,
-                const QString& email = QString(),
-                const QString& phone = QString(),
-                const QString& nickname = QString(),
-                const QString& role = "user");
-    bool updateUser(const QString& username, const QString& email,
+                const QString& email, const QString& phone,
+                const QString& nickname, const QString& role);
+    bool updateUser(int user_id, const QString& email,
                    const QString& phone, const QString& nickname);
-    bool updatePassword(const QString& username, const QString& newPassword);
-    bool deleteUser(const QString& username);
-    bool verifyUser(const QString& username, const QString& password, QString& role);
-    bool getUserInfo(const QString& username, QString& email,
+    bool updatePassword(int user_id, const QString& newPassword);
+    bool deleteUser(int user_id);
+    bool verifyUser(const QString& username, const QString& password, int& user_id, QString& role);
+    bool getUserInfo(int user_id, QString& username, QString& email,
                     QString& phone, QString& nickname, QString& role);
+    bool getUserIdByUsername(const QString& username, int& user_id);
 
     // 设备管理
-    bool addDevice(const QString& deviceId, const QString& name,
-                  const QString& type, const QString& location);
-    bool updateDevice(const QString& deviceId, const QString& name,
-                     const QString& type, const QString& location);
-    bool deleteDevice(const QString& deviceId);
+    bool addDevice(const QString& name, const QString& type, const QString& location,
+                  const QString& manufacturer, const QString& model, const QString& installation_date);
+    bool updateDevice(int device_id, const QString& name, const QString& type, const QString& location,
+                     const QString& manufacturer, const QString& model, const QString& installation_date);
+    bool deleteDevice(int device_id);
     QVariantList getDevices();
+    bool getDeviceIdByName(const QString& name, int& device_id);
+    bool getDeviceById(int device_id, QVariantMap& device);
 
     // 监控数据
-    bool addMonitorData(const QString& deviceId, double temperature,
-                       double humidity, double cpuUsage,
-                       double memoryUsage, double networkSpeed);
-    QVariantList getDeviceData(const QString& deviceId,
-                              const QDateTime& startTime,
-                              const QDateTime& endTime);
+    bool addMonitorData(int device_id, const QDateTime& timestamp,
+                       double temperature, double humidity, double light);
+    QVariantList getDeviceData(int device_id, const QDateTime& startTime, const QDateTime& endTime);
 
-    // 告警管理
-    bool addAlarm(const QString& deviceId, const QString& type,
-                 const QString& description, const QString& level);
-    bool updateAlarmStatus(int alarmId, const QString& status);
-    QVariantList getAlarms(const QString& deviceId = QString(),
-                          const QDateTime& startTime = QDateTime(),
-                          const QDateTime& endTime = QDateTime());
+    // 告警规则
+    bool addAlarmRule(int device_id, const QString& description, const QString& condition, const QString& action);
+    bool updateAlarmRule(int rule_id, const QString& description, const QString& condition, const QString& action);
+    bool deleteAlarmRule(int rule_id);
+    QVariantList getAlarmRules(int device_id);
+
+    // 告警记录
+    bool addAlarmRecord(int device_id, const QDateTime& timestamp, const QString& content, const QString& status, const QString& note);
+    QVariantList getAlarmRecords(int device_id);
 
     // 系统日志
-    bool addLog(const QString& type, const QString& content,
-                const QString& username);
-    QVariantList getLogs(const QDateTime& startTime = QDateTime(),
-                        const QDateTime& endTime = QDateTime());
+    bool addLog(const QString& log_type, const QString& log_level, const QString& content,
+                int user_id = -1, int device_id = -1);
+    QVariantList getLogs(const QDateTime& startTime = QDateTime(), const QDateTime& endTime = QDateTime());
 
 signals:
     void databaseError(const QString& error);
@@ -83,6 +82,7 @@ private:
     DatabaseManager& operator=(const DatabaseManager&) = delete;
 
     bool createTables();
+    bool dropTables();
     bool executeQuery(const QString& sql);
     void setLastError(const QString& error);
 

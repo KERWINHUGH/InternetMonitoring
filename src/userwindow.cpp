@@ -4,10 +4,10 @@
 #include <QAction>
 #include <QMessageBox>
 #include "profilewindow.h"
-#include "dataviewer.h"
+#include "databaseviewer.h"
 
 UserWindow::UserWindow(const QString& username, QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::UserWindow), currentUsername(username), profileWindow(nullptr), dataViewer(nullptr)
+    : QMainWindow(parent), ui(new Ui::UserWindow), currentUsername(username), profileWindow(nullptr), databaseViewer(nullptr)
 {
     ui->setupUi(this);
     setFixedSize(800, 600);
@@ -36,25 +36,19 @@ UserWindow::~UserWindow()
     if (profileWindow) {
         delete profileWindow;
     }
-    if (dataViewer) {
-        delete dataViewer;
+    if (databaseViewer) {
+        delete databaseViewer;
     }
 }
 
 void UserWindow::onMonitoringClicked()
 {
-    // 获取用户角色
-    QString email, phone, nickname, role;
-    if (DatabaseManager::instance().getUserInfo(currentUsername, email, phone, nickname, role)) {
-        if (!dataViewer) {
-            dataViewer = new DataViewer(currentUsername, role, this);
-        }
-        dataViewer->show();
-        dataViewer->raise();
-        dataViewer->activateWindow();
-    } else {
-        QMessageBox::warning(this, "错误", "无法获取用户信息");
+    if (!databaseViewer) {
+        databaseViewer = new DatabaseViewer(this, QStringList() << "users"); // 或按需显示其他表
     }
+    databaseViewer->show();
+    databaseViewer->raise();
+    databaseViewer->activateWindow();
 }
 
 void UserWindow::onPersonalSettingsClicked()

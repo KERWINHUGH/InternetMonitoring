@@ -14,8 +14,10 @@ int main(int argc, char *argv[])
     }
 
     // 检查并创建初始管理员账户
-    QString email, phone, nickname, role;
-    if (!DatabaseManager::instance().getUserInfo("admin", email, phone, nickname, role)) {
+    int admin_id;
+    QString username, email, phone, nickname, role;
+    if (!DatabaseManager::instance().getUserIdByUsername("admin", admin_id) ||
+        !DatabaseManager::instance().getUserInfo(admin_id, username, email, phone, nickname, role)) {
         // 管理员账户不存在，创建一个
         if (!DatabaseManager::instance().addUser(
             "admin", "admin123", 

@@ -107,21 +107,24 @@ void ProfileWindow::setupUI()
 void ProfileWindow::loadUserInfo()
 {
     QString email, phone, nickname, role;
-    if (DatabaseManager::instance().getUserInfo(currentUsername, email, phone, nickname, role)) {
-        currentEmail = email;
-        currentPhone = phone;
-        currentNickname = nickname;
-        currentRole = role;
-
-        // 显示信息
-        usernameLabel->setText(currentUsername);
-        emailEdit->setText(currentEmail);
-        phoneEdit->setText(currentPhone);
-        nicknameEdit->setText(currentNickname);
-        roleLabel->setText(currentRole == "admin" ? "管理员" : "普通用户");
-    } else {
-        QMessageBox::warning(this, "错误", "无法加载用户信息");
+    int user_id;
+    if (DatabaseManager::instance().getUserIdByUsername(currentUsername, user_id)) {
+        QString username;
+        if (DatabaseManager::instance().getUserInfo(user_id, username, email, phone, nickname, role)) {
+            currentEmail = email;
+            currentPhone = phone;
+            currentNickname = nickname;
+            currentRole = role;
+            // 显示信息
+            usernameLabel->setText(currentUsername);
+            emailEdit->setText(currentEmail);
+            phoneEdit->setText(currentPhone);
+            nicknameEdit->setText(currentNickname);
+            roleLabel->setText(currentRole == "admin" ? "管理员" : "普通用户");
+            return;
+        }
     }
+    QMessageBox::warning(this, "错误", "无法加载用户信息");
 }
 
 void ProfileWindow::saveUserInfo()
@@ -129,36 +132,32 @@ void ProfileWindow::saveUserInfo()
     QString newEmail = emailEdit->text().trimmed();
     QString newPhone = phoneEdit->text().trimmed();
     QString newNickname = nicknameEdit->text().trimmed();
-
-    // 验证邮箱格式
     QRegExp emailRegex("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}\\b");
     if (!newEmail.isEmpty() && !emailRegex.exactMatch(newEmail)) {
         QMessageBox::warning(this, "错误", "邮箱格式不正确");
         return;
     }
-
-    // 验证手机号格式
     QRegExp phoneRegex("^1[3-9]\\d{9}$");
     if (!newPhone.isEmpty() && !phoneRegex.exactMatch(newPhone)) {
         QMessageBox::warning(this, "错误", "手机号格式不正确");
         return;
     }
-
-    // 更新用户信息
-    if (DatabaseManager::instance().updateUser(currentUsername, newEmail, newPhone, newNickname)) {
-        QMessageBox::information(this, "成功", "个人信息更新成功");
-        currentEmail = newEmail;
-        currentPhone = newPhone;
-        currentNickname = newNickname;
-        emit profileUpdated();
-    } else {
-        QMessageBox::warning(this, "错误", "更新失败，请重试");
+    int user_id;
+    if (DatabaseManager::instance().getUserIdByUsername(currentUsername, user_id)) {
+        if (DatabaseManager::instance().updateUser(user_id, newEmail, newPhone, newNickname)) {
+            QMessageBox::information(this, "成功", "个人信息更新成功");
+            currentEmail = newEmail;
+            currentPhone = newPhone;
+            currentNickname = newNickname;
+            emit profileUpdated();
+            return;
+        }
     }
+    QMessageBox::warning(this, "错误", "更新失败，请重试");
 }
 
 bool ProfileWindow::changePassword()
 {
-    // 输入原密码
     bool ok;
     QString oldPassword = QInputDialog::getText(this, "修改密码", 
                                                "请输入原密码:", 
@@ -166,43 +165,34 @@ bool ProfileWindow::changePassword()
     if (!ok || oldPassword.isEmpty()) {
         return false;
     }
-
-    // 验证原密码
+    int user_id;
     QString role;
-    if (!DatabaseManager::instance().verifyUser(currentUsername, oldPassword, role)) {
+    if (!DatabaseManager::instance().getUserIdByUsername(currentUsername, user_id) ||
+        !DatabaseManager::instance().verifyUser(currentUsername, oldPassword, user_id, role)) {
         QMessageBox::warning(this, "错误", "原密码不正确");
         return false;
     }
-
-    // 输入新密码
     QString newPassword = QInputDialog::getText(this, "修改密码", 
                                                "请输入新密码（6-20位）:", 
                                                QLineEdit::Password, "", &ok);
     if (!ok || newPassword.isEmpty()) {
         return false;
     }
-
-    // 验证新密码长度
     if (newPassword.length() < 6 || newPassword.length() > 20) {
         QMessageBox::warning(this, "错误", "新密码长度必须在6-20位之间");
         return false;
     }
-
-    // 确认新密码
     QString confirmPassword = QInputDialog::getText(this, "修改密码", 
                                                    "请再次输入新密码:", 
                                                    QLineEdit::Password, "", &ok);
     if (!ok || confirmPassword.isEmpty()) {
         return false;
     }
-
     if (newPassword != confirmPassword) {
         QMessageBox::warning(this, "错误", "两次输入的密码不一致");
         return false;
     }
-
-    // 更新密码
-    if (DatabaseManager::instance().updatePassword(currentUsername, newPassword)) {
+    if (DatabaseManager::instance().updatePassword(user_id, newPassword)) {
         QMessageBox::information(this, "成功", "密码修改成功");
         return true;
     } else {

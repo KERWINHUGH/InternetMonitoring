@@ -1,2 +1,0 @@
-D:/code/QT/project/InternetMonitoring/build/CMakeFiles/edit_cache.dir
-D:/code/QT/project/InternetMonitoring/build/CMakeFiles/rebuild_cache.dir

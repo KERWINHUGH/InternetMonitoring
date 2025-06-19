@@ -11,7 +11,7 @@
 
 // 前向声明
 class ProfileWindow;
-class DataViewer;
+class DatabaseViewer;
 
 namespace Ui {
 class UserWindow;
@@ -37,9 +37,9 @@ private slots:
 
 private:
     Ui::UserWindow *ui;
-    QString currentUsername;
     ProfileWindow *profileWindow;
-    DataViewer *dataViewer;
+    DatabaseViewer *databaseViewer;
+    QString currentUsername;
 };
 
 #endif // USERWINDOW_H 

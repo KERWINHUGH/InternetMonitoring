@@ -31,18 +31,22 @@ void ForgetPasswordWindow::onResetClicked()
         return;
     }
     
-    // 验证用户信息
-    QString storedEmail, storedPhone, nickname, role;
-    if (!DatabaseManager::instance().getUserInfo(username, storedEmail, storedPhone, nickname, role)) {
+    // 先获取user_id
+    int user_id;
+    if (!DatabaseManager::instance().getUserIdByUsername(username, user_id)) {
         showError("用户名不存在");
         return;
     }
-    
+    // 验证用户信息
+    QString storedUsername, storedEmail, storedPhone, nickname, role;
+    if (!DatabaseManager::instance().getUserInfo(user_id, storedUsername, storedEmail, storedPhone, nickname, role)) {
+        showError("用户信息获取失败");
+        return;
+    }
     if (storedEmail != email || storedPhone != phone) {
         showError("邮箱或手机号不匹配");
         return;
     }
-    
     // 弹出新密码输入对话框
     bool ok;
     QString newPassword = QInputDialog::getText(this, "设置新密码", 
@@ -51,14 +55,12 @@ void ForgetPasswordWindow::onResetClicked()
     if (!ok || newPassword.isEmpty()) {
         return;
     }
-    
     if (newPassword.length() < 6 || newPassword.length() > 20) {
         showError("密码长度必须在6-20位之间");
         return;
     }
-    
     // 更新密码
-    if (DatabaseManager::instance().updatePassword(username, newPassword)) {
+    if (DatabaseManager::instance().updatePassword(user_id, newPassword)) {
         QMessageBox::information(this, "成功", "密码更新成功！");
         emit backToLogin();
     } else {
