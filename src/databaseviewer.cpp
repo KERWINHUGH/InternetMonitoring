@@ -147,6 +147,8 @@ void DatabaseViewer::loadTableData(const QString& tableName)
         displayAlarmRecords();
     } else if (tableName == "system_logs") {
         displaySystemLogs();
+    } else if (tableName == "device_groups") {
+        displayDeviceGroups();
     }
 
     statusLabel->setText(QString("已加载 %1 条记录").arg(dataTable->rowCount()));
@@ -164,6 +166,25 @@ void DatabaseViewer::displayUsers()
     while (query.next()) {
         dataTable->insertRow(row);
         for (int col = 0; col < 7; ++col) {
+            QTableWidgetItem *item = new QTableWidgetItem(query.value(col).toString());
+            dataTable->setItem(row, col, item);
+        }
+        row++;
+    }
+}
+
+void DatabaseViewer::displayDeviceGroups()
+{
+    dataTable->clear();
+    dataTable->setColumnCount(3);
+    dataTable->setHorizontalHeaderLabels({"分组ID", "分组名", "分组类型"});
+
+    QSqlQuery query("SELECT group_id, group_name, group_type FROM device_groups");
+
+    int row = 0;
+    while (query.next()) {
+        dataTable->insertRow(row);
+        for (int col = 0; col < 3; ++col) {
             QTableWidgetItem *item = new QTableWidgetItem(query.value(col).toString());
             dataTable->setItem(row, col, item);
         }

@@ -168,7 +168,7 @@ void MainWindow::setupConnections()
     connect(logManager, &LoginManager::registerSuccess, this, &MainWindow::onRegisterSuccess);
     connect(logManager, &LoginManager::registerFailed, this, &MainWindow::onRegisterFailed);
     connect(logManager, &LoginManager::sessionTimeout, this, &MainWindow::onSessionTimeout);
-    connect(logManager, &LoginManager::sessionWarning, this, &MainWindow::onSessionWarning);
+    // connect(logManager, &LoginManager::sessionWarning, this, &MainWindow::onSessionWarning);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -248,13 +248,15 @@ void MainWindow::onLoginSuccess(bool isAdmin)
     QMessageBox::information(this, "登录成功", 
         isAdmin ? "管理员登录成功" : "用户登录成功");
     
-    hide();
+    this->hide();
+    
     if (isAdmin) {
-        if (!adminWindow) {
-            adminWindow = new AdminWindow(currentUsername);
-            connect(adminWindow, &AdminWindow::windowClosed, 
-                    this, &MainWindow::onAdminWindowClosed);
+        if (adminWindow) {
+            adminWindow->close();
+            delete adminWindow;
         }
+        adminWindow = new AdminWindow(currentUsername, this);
+        connect(adminWindow, &AdminWindow::windowClosed, this, &MainWindow::showLoginWindow);
         adminWindow->show();
     } else {
         if (!userWindow) {
@@ -289,7 +291,7 @@ void MainWindow::onRegisterSuccess()
         disconnect(registerWindow, nullptr, this, nullptr);
         registerWindow = nullptr;
     }
-    QMessageBox::information(this, "注册成功", "请登录");
+    QMessageBox::information(this, "注册成功", "新用户注册成功，请登录。");
     clearInputFields();
     this->show();
 }
@@ -315,6 +317,7 @@ void MainWindow::onAdminWindowClosed()
     show();
     clearInputFields();
     logManager->resetLoginAttempts();
+    adminWindow = nullptr;
 }
 
 /**
@@ -388,33 +391,6 @@ void MainWindow::onCloseClicked()
     close();
 }
 
-void MainWindow::onSessionTimeout()
-{
-    if (adminWindow && adminWindow->isVisible()) {
-        adminWindow->close();
-    }
-    if (userWindow && userWindow->isVisible()) {
-        userWindow->close();
-    }
-    show();
-    QMessageBox::warning(this, "会话超时", "由于长时间未操作，您已被自动登出");
-    clearInputFields();
-}
-
-void MainWindow::onSessionWarning(int remainingSeconds)
-{
-    int minutes = remainingSeconds / 60;
-    int seconds = remainingSeconds % 60;
-    QString message = QString("您的会话将在 %1分%2秒 后超时，请及时保存工作。")
-                         .arg(minutes)
-                         .arg(seconds);
-    
-    QWidget* activeWindow = QApplication::activeWindow();
-    if (activeWindow) {
-        QMessageBox::warning(activeWindow, "会话即将超时", message);
-    }
-}
-
 void MainWindow::onRegisterWindowBack()
 {
     if (registerWindow) registerWindow->hide();
@@ -434,5 +410,29 @@ void MainWindow::onForgetPasswordClicked()
 void MainWindow::onForgetPasswordWindowBack()
 {
     if (forgetPasswordWindow) forgetPasswordWindow->hide();
+    this->show();
+}
+
+void MainWindow::onSessionTimeout()
+{
+    QMessageBox::information(this, "会话超时", "长时间未操作，您已自动登出。");
+    showLoginWindow();
+}
+
+void MainWindow::onSessionWarning(int remainingSeconds)
+{
+    // QMessageBox::warning(this, "会话即将超时", 
+    //     QString("您已长时间未操作，会话将在 %1 秒后自动登出。").arg(remainingSeconds));
+}
+
+void MainWindow::showLoginWindow()
+{
+    if (adminWindow) {
+        adminWindow->close();
+    }
+    if (userWindow) {
+        userWindow->close();
+    }
+    clearInputFields();
     this->show();
 }

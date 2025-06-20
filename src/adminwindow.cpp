@@ -18,7 +18,8 @@ class UserManagementPage : public QWidget {
 public:
     UserManagementPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "users");
+        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "users" << "device_groups" << "devices");
+        viewer->setWindowFlags(Qt::Widget);
         layout->addWidget(viewer);
         layout->setContentsMargins(0,0,0,0);
     }
@@ -54,40 +55,40 @@ class NetworkMonitorPage : public QWidget {
 public:
     NetworkMonitorPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* label = new QLabel("数据监控功能区（可集成原有窗口）", this);
-        label->setAlignment(Qt::AlignCenter);
-        label->setStyleSheet("font-size:18px;color:#2c3e50;margin:40px;");
-        layout->addWidget(label);
+        NetworkMonitorWindow* win = new NetworkMonitorWindow(this);
+        win->setWindowFlags(Qt::Widget);
+        layout->addWidget(win);
+        layout->setContentsMargins(0,0,0,0);
     }
 };
 class AlarmRuleManagementPage : public QWidget {
 public:
     AlarmRuleManagementPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* label = new QLabel("告警规则管理功能区（可集成原有窗口）", this);
-        label->setAlignment(Qt::AlignCenter);
-        label->setStyleSheet("font-size:18px;color:#2c3e50;margin:40px;");
-        layout->addWidget(label);
+        AlarmRuleManagementWindow* win = new AlarmRuleManagementWindow(this);
+        win->setWindowFlags(Qt::Widget);
+        layout->addWidget(win);
+        layout->setContentsMargins(0,0,0,0);
     }
 };
 class AlarmDisplayPage : public QWidget {
 public:
     AlarmDisplayPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* label = new QLabel("告警展示功能区（可集成原有窗口）", this);
-        label->setAlignment(Qt::AlignCenter);
-        label->setStyleSheet("font-size:18px;color:#2c3e50;margin:40px;");
-        layout->addWidget(label);
+        AlarmDisplayWindow* win = new AlarmDisplayWindow(this);
+        win->setWindowFlags(Qt::Widget);
+        layout->addWidget(win);
+        layout->setContentsMargins(0,0,0,0);
     }
 };
 class DataAnalysisPage : public QWidget {
 public:
     DataAnalysisPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* label = new QLabel("数据分析功能区（可集成原有窗口）", this);
-        label->setAlignment(Qt::AlignCenter);
-        label->setStyleSheet("font-size:18px;color:#2c3e50;margin:40px;");
-        layout->addWidget(label);
+        DataAnalysisWindow* win = new DataAnalysisWindow(this);
+        win->setWindowFlags(Qt::Widget);
+        layout->addWidget(win);
+        layout->setContentsMargins(0,0,0,0);
     }
 };
 
@@ -99,6 +100,8 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     ui->setupUi(this);
     setFixedSize(800, 600);
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+    ui->systemSettingsBtn->hide();
 
     // 全局QSS美化
     QString mainQss = R"(
@@ -121,6 +124,7 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     }
     QPushButton, QToolButton {
         border-radius: 8px;
+        border: none;
         font-size: 16px;
     }
     QPushButton:hover, QToolButton:hover {
@@ -155,7 +159,7 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     ui->sideBarWidget->setStyleSheet(sideBarQss);
 
     // 按钮与页面切换
-    QList<QToolButton*> btns = {ui->userManagementBtn, ui->systemSettingsBtn, ui->deviceManagementBtn, ui->networkMonitorBtn, ui->alarmRuleManagementBtn, ui->alarmDisplayBtn, ui->dataAnalysisBtn};
+    QList<QToolButton*> btns = {ui->userManagementBtn, ui->deviceManagementBtn, ui->networkMonitorBtn, ui->alarmRuleManagementBtn, ui->alarmDisplayBtn, ui->dataAnalysisBtn};
     for (int i = 0; i < btns.size(); ++i) {
         connect(btns[i], &QToolButton::clicked, this, [=]() {
             smoothSwitchToPage(i);
@@ -171,7 +175,6 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
 
     // 实例化功能页面并添加到QStackedWidget
     UserManagementPage* userPage = new UserManagementPage(this);
-    SystemSettingsPage* settingsPage = new SystemSettingsPage(this);
     DeviceManagementPage* devicePage = new DeviceManagementPage(currentUsername, this);
     NetworkMonitorPage* networkPage = new NetworkMonitorPage(this);
     AlarmRuleManagementPage* alarmRulePage = new AlarmRuleManagementPage(this);
@@ -179,54 +182,13 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     DataAnalysisPage* dataAnalysisPage = new DataAnalysisPage(this);
 
     ui->mainStackedWidget->addWidget(userPage);         // index 0
-    ui->mainStackedWidget->addWidget(settingsPage);     // index 1
-    ui->mainStackedWidget->addWidget(devicePage);       // index 2
-    ui->mainStackedWidget->addWidget(networkPage);      // index 3
-    ui->mainStackedWidget->addWidget(alarmRulePage);    // index 4
-    ui->mainStackedWidget->addWidget(alarmDisplayPage); // index 5
-    ui->mainStackedWidget->addWidget(dataAnalysisPage); // index 6
+    ui->mainStackedWidget->addWidget(devicePage);       // index 1
+    ui->mainStackedWidget->addWidget(networkPage);      // index 2
+    ui->mainStackedWidget->addWidget(alarmRulePage);    // index 3
+    ui->mainStackedWidget->addWidget(alarmDisplayPage); // index 4
+    ui->mainStackedWidget->addWidget(dataAnalysisPage); // index 5
 
-    // 测试QStackedWidget是否能正常显示内容
-    QLabel* testLabel = new QLabel("测试页面", this);
-    testLabel->setAlignment(Qt::AlignCenter);
-    testLabel->setStyleSheet("font-size: 28px; color: #1976D2; font-weight: bold;");
-    ui->mainStackedWidget->addWidget(testLabel);
-    ui->mainStackedWidget->setCurrentWidget(testLabel);
-
-    // 设置默认显示第一个页面
-    ui->mainStackedWidget->setCurrentIndex(0);
-    // 默认高亮第一个按钮
-    ui->userManagementBtn->setChecked(true);
-
-    // 用户管理页面
-    DatabaseViewer* userViewer = new DatabaseViewer(this, QStringList() << "users");
-    ui->mainStackedWidget->insertWidget(0, userViewer);
-
-    // 系统设置页面
-//    SystemSettingsPage* settingsPage = new SystemSettingsPage(this);
-    ui->mainStackedWidget->insertWidget(1, settingsPage);
-
-    // 网络监控页面
-    NetworkMonitorWindow* networkWin = new NetworkMonitorWindow(this);
-    networkWin->setWindowFlags(Qt::Widget);
-    ui->mainStackedWidget->insertWidget(3, networkWin);
-
-    // 告警规则页面
-    AlarmRuleManagementWindow* alarmRuleWin = new AlarmRuleManagementWindow(this);
-    alarmRuleWin->setWindowFlags(Qt::Widget);
-    ui->mainStackedWidget->insertWidget(4, alarmRuleWin);
-
-    // 告警展示页面
-    AlarmDisplayWindow* alarmDisplayWin = new AlarmDisplayWindow(this);
-    alarmDisplayWin->setWindowFlags(Qt::Widget);
-    ui->mainStackedWidget->insertWidget(5, alarmDisplayWin);
-
-    // 数据分析页面
-    DataAnalysisWindow* dataAnalysisWin = new DataAnalysisWindow(this);
-    dataAnalysisWin->setWindowFlags(Qt::Widget);
-    ui->mainStackedWidget->insertWidget(6, dataAnalysisWin);
-
-    // 默认显示第一个页面
+    // 设置默认显示用户管理页面
     ui->mainStackedWidget->setCurrentIndex(0);
     ui->userManagementBtn->setChecked(true);
 }
@@ -258,16 +220,6 @@ void AdminWindow::onUserManagementClicked()
 {
     if (!databaseViewer) {
         databaseViewer = new DatabaseViewer(this, QStringList() << "users");
-    }
-    databaseViewer->show();
-    databaseViewer->raise();
-    databaseViewer->activateWindow();
-}
-
-void AdminWindow::onSystemSettingsClicked()
-{
-    if (!databaseViewer) {
-        databaseViewer = new DatabaseViewer(this);
     }
     databaseViewer->show();
     databaseViewer->raise();

@@ -65,6 +65,7 @@ private:
     void setupConnections();
     void clearInputFields();
     void showError(const QString& message);
+    void showLoginWindow();
 };
 
 #endif // MAINWINDOW_H

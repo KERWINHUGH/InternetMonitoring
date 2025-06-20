@@ -56,7 +56,7 @@ UserWindow::~UserWindow()
 void UserWindow::onMonitoringClicked()
 {
     if (!databaseViewer) {
-        databaseViewer = new DatabaseViewer(this, QStringList() << "users"); // 或按需显示其他表
+        databaseViewer = new DatabaseViewer(this, QStringList() << "device_groups"); // 或按需显示其他表
     }
     databaseViewer->show();
     databaseViewer->raise();

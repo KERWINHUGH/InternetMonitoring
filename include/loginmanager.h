@@ -39,7 +39,7 @@ public:
     // 会话管理
     void resetSessionTimer();
     void setSessionTimeout(int minutes);
-    int getSessionTimeout() const { return sessionTimeoutMinutes; }
+    int getSessionTimeout() const;
     QDateTime getLastActivityTime() const { return lastActivityTime; }
 
     // 密码验证
@@ -73,6 +73,7 @@ private:
     QTimer *sessionTimer;
     QDateTime lastActivityTime;
     int sessionTimeoutMinutes;
+    const int SESSION_WARNING_THRESHOLD = 1; // 提前1分钟警告
     bool sessionWarningEmitted;
 
     // 密码验证规则
@@ -89,7 +90,6 @@ private:
 
     // 会话设置
     static const int DEFAULT_SESSION_TIMEOUT = 30;  // 30分钟
-    static const int SESSION_WARNING_THRESHOLD = 5; // 剩余5分钟时发出警告
 };
 
 #endif // LOGINMANAGER_H

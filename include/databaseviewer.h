@@ -37,6 +37,7 @@ private:
 
     void displayAlarmRules();
     void displayAlarmRecords();
+    void displayDeviceGroups();
 
     QWidget *centralWidget;     // 主窗口
     QVBoxLayout *mainLayout; // 主布局

@@ -13,8 +13,8 @@ LoginManager::LoginManager(QObject *parent)
       sessionTimeoutMinutes(DEFAULT_SESSION_TIMEOUT), sessionWarningEmitted(false)
 {
     connect(sessionTimer, &QTimer::timeout, this, &LoginManager::checkSessionTimeout);
-    sessionTimer->setInterval(60000); // 每分钟检查一次
-    sessionTimer->start();
+    // sessionTimer->setInterval(60000); // 每分钟检查一次
+    // sessionTimer->start();
 }
 
 LoginManager::~LoginManager()
@@ -37,6 +37,11 @@ void LoginManager::setSessionTimeout(int minutes)
     }
 }
 
+int LoginManager::getSessionTimeout() const
+{
+    return sessionTimeoutMinutes;
+}
+
 void LoginManager::checkSessionTimeout()
 {
     if (!isLoggedIn()) return;
@@ -51,7 +56,7 @@ void LoginManager::checkSessionTimeout()
         emit sessionTimeout();
     } else if (remainingSeconds <= SESSION_WARNING_THRESHOLD * 60 && !sessionWarningEmitted) {
         // 发出警告
-        emit sessionWarning(remainingSeconds);
+        // emit sessionWarning(remainingSeconds);
         sessionWarningEmitted = true;
     }
 }
@@ -271,5 +276,5 @@ void LoginManager::logout()
     }
     currentUsername.clear();
     currentUserRole.clear();
-    sessionTimer->stop();
+    // sessionTimer->stop();
 }

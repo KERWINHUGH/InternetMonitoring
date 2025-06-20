@@ -8,6 +8,8 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
+#include <QStackedWidget>
+#include <QToolButton>
 
 // 前向声明
 class DatabaseViewer;
@@ -34,7 +36,6 @@ signals:
 
 private slots:
     void onUserManagementClicked();
-    void onSystemSettingsClicked();
     void onDeviceManagementClicked();
     void onNetworkMonitorClicked();
     void onAlarmRuleManagementClicked();
