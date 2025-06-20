@@ -18,6 +18,7 @@ class NetworkMonitorWindow;
 class AlarmRuleManagementWindow;
 class AlarmDisplayWindow;
 class DataAnalysisWindow;
+class QButtonGroup;
 
 namespace Ui {
 class AdminWindow;
@@ -54,6 +55,7 @@ private:
     AlarmDisplayWindow *alarmDisplayWindow;
     DataAnalysisWindow *dataAnalysisWindow;
     QString currentUsername;
+    QButtonGroup* sideBarGroup;
 };
 
 #endif // ADMINWINDOW_H 

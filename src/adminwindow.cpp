@@ -12,6 +12,8 @@
 #include <QButtonGroup>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QIcon>
+#include <QStyle>
 
 // 用户管理页面集成DatabaseViewer
 class UserManagementPage : public QWidget {
@@ -95,13 +97,39 @@ public:
 AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::AdminWindow), databaseViewer(nullptr), deviceManagementWindow(nullptr),
       networkMonitorWindow(nullptr), alarmRuleManagementWindow(nullptr), alarmDisplayWindow(nullptr), dataAnalysisWindow(nullptr),
-      currentUsername(currentUsername)
+      currentUsername(currentUsername), sideBarGroup(nullptr)
 {
     ui->setupUi(this);
-    setFixedSize(800, 600);
-    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    // setFixedSize(900, 650); // 移除固定大小限制，使其可缩放
+    setMinimumSize(900, 650); // 设置一个最小尺寸以保证布局不会错乱
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 
     ui->systemSettingsBtn->hide();
+
+    // 优化：为按钮添加图标并设置样式
+    ui->sideBarWidget->setMinimumWidth(160);
+
+    QList<QToolButton*> btns = {ui->userManagementBtn, ui->deviceManagementBtn, ui->networkMonitorBtn, ui->alarmRuleManagementBtn, ui->alarmDisplayBtn, ui->dataAnalysisBtn};
+    QList<QStyle::StandardPixmap> icons = {
+        QStyle::SP_DirHomeIcon,           // 用户管理
+        QStyle::SP_ComputerIcon,          // 设备管理
+        QStyle::SP_DriveNetIcon,          // 网络监控
+        QStyle::SP_FileIcon,              // 报警规则
+        QStyle::SP_MessageBoxWarning,     // 报警显示
+        QStyle::SP_FileDialogDetailedView // 数据分析
+    };
+
+    sideBarGroup = new QButtonGroup(this);
+
+    for (int i = 0; i < btns.size(); ++i) {
+        btns[i]->setIcon(style()->standardIcon(icons[i]));
+        btns[i]->setIconSize(QSize(22, 22));
+        btns[i]->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        btns[i]->setMinimumHeight(40);
+        btns[i]->setCheckable(true); // 设置为可勾选
+        sideBarGroup->addButton(btns[i], i); // 添加到按钮组
+    }
+    sideBarGroup->setExclusive(true); // 设置互斥
 
     // 全局QSS美化
     QString mainQss = R"(
@@ -136,35 +164,44 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
 
     // 设置QSS样式
     QString sideBarQss = R"(
+    #sideBarWidget {
+        background: #2c3e50; /* 设置侧边栏背景色 */
+        border-right: 1px solid #34495e;
+    }
     QToolButton {
         background: transparent;
-        color: #bbb;
+        color: #bdc3c7; /* 默认文字颜色 */
         border: none;
-        padding: 16px 0;
-        font-size: 15px;
+        padding: 10px 15px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: normal;
     }
-    QToolButton:checked, QToolButton:hover {
-        background: #2196F3;
-        color: #fff;
-        border-radius: 8px;
+    QToolButton:hover {
+        background: #34495e; /* 悬停背景色 */
+        color: white;
+    }
+    QToolButton:checked {
+        color: white;
+        font-weight: bold;
+        background: #2980b9; /* 选中背景色 */
+        border-left: 3px solid #3498db; /* 选中指示条 */
     }
     QPushButton#logoutBtn, QPushButton#exitBtn {
         background: #f44336;
         color: #fff;
         border-radius: 8px;
-        margin: 8px 0;
+        margin: 8px 15px; /* 调整边距 */
         padding: 10px 0;
+    }
+    QPushButton#logoutBtn:hover, QPushButton#exitBtn:hover {
+        background: #e53935; /* 悬停时颜色加深 */
     }
     )";
     ui->sideBarWidget->setStyleSheet(sideBarQss);
 
     // 按钮与页面切换
-    QList<QToolButton*> btns = {ui->userManagementBtn, ui->deviceManagementBtn, ui->networkMonitorBtn, ui->alarmRuleManagementBtn, ui->alarmDisplayBtn, ui->dataAnalysisBtn};
-    for (int i = 0; i < btns.size(); ++i) {
-        connect(btns[i], &QToolButton::clicked, this, [=]() {
-            smoothSwitchToPage(i);
-        });
-    }
+    connect(sideBarGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &AdminWindow::smoothSwitchToPage);
 
     // 信号槽连接
     connect(ui->logoutBtn, &QPushButton::clicked, this, &AdminWindow::onLogoutClicked);
@@ -188,9 +225,8 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     ui->mainStackedWidget->addWidget(alarmDisplayPage); // index 4
     ui->mainStackedWidget->addWidget(dataAnalysisPage); // index 5
 
-    // 设置默认显示用户管理页面
-    ui->mainStackedWidget->setCurrentIndex(0);
-    ui->userManagementBtn->setChecked(true);
+    // 设置默认显示设备管理页面
+    ui->deviceManagementBtn->click();
 }
 
 AdminWindow::~AdminWindow()
@@ -296,6 +332,11 @@ void AdminWindow::onDataAnalysisClicked()
 }
 
 void AdminWindow::smoothSwitchToPage(int pageIndex) {
+    // 确保按钮状态和页面同步
+    if(qobject_cast<QToolButton*>(sideBarGroup->button(pageIndex))) {
+        qobject_cast<QToolButton*>(sideBarGroup->button(pageIndex))->setChecked(true);
+    }
+    
     QWidget* current = ui->mainStackedWidget->currentWidget();
     QWidget* next = ui->mainStackedWidget->widget(pageIndex);
     if (current == next) return;

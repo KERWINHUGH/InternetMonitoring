@@ -22,8 +22,8 @@ UserWindow::UserWindow(const QString& username, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::UserWindow), currentUsername(username), profileWindow(nullptr), databaseViewer(nullptr)
 {
     ui->setupUi(this);
-    setFixedSize(800, 600);
-    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    setMinimumSize(800, 600);
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 
     // 信号槽连接
     connect(ui->networkMonitorBtn, &QPushButton::clicked, this, &UserWindow::onMonitoringClicked);
