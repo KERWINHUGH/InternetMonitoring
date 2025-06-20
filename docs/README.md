@@ -1,61 +1,53 @@
 # 物联网设备监控系统
 
+## 项目简介
+
+本系统是基于 Qt 和 SQLite 的物联网设备监控与管理平台，支持管理员和普通用户两种角色，具备设备管理、网络监控、告警规则、数据分析、系统日志、权限控制等功能。界面采用现代化侧边栏风格，支持多平台运行。
+
 ## 项目结构
 
 ```
 InternetMonitoring/
-├── src/                    # 源代码文件
-│   ├── main.cpp           # 主程序入口
-│   ├── mainwindow.cpp     # 主窗口实现
-│   ├── adminwindow.cpp    # 管理员窗口实现
-│   ├── userwindow.cpp     # 用户窗口实现
-│   ├── profilewindow.cpp  # 个人信息管理窗口
-│   ├── dataviewer.cpp     # 数据查看和管理窗口
-│   ├── databaseviewer.cpp # 数据库查看器
-│   ├── databasemanager.cpp # 数据库管理器
-│   ├── loginmanager.cpp   # 登录管理器
-│   ├── registerwindow.cpp # 注册窗口
-│   ├── forgetpasswordwindow.cpp # 忘记密码窗口
-│   └── test_database.cpp  # 数据库测试程序
-├── include/               # 头文件
-│   ├── mainwindow.h
+├── src/                    # 源代码
+│   ├── main.cpp
+│   ├── adminwindow.cpp
+│   ├── userwindow.cpp
+│   ├── profilewindow.cpp
+│   ├── databaseviewer.cpp
+│   ├── databasemanager.cpp
+│   ├── ...（其他功能模块）
+├── include/                # 头文件
 │   ├── adminwindow.h
 │   ├── userwindow.h
 │   ├── profilewindow.h
-│   ├── dataviewer.h
 │   ├── databaseviewer.h
 │   ├── databasemanager.h
-│   ├── loginmanager.h
-│   ├── registerwindow.h
-│   └── forgetpasswordwindow.h
-├── ui/                    # UI文件
-│   ├── mainwindow.ui
+│   ├── ...（其他头文件）
+├── ui/                     # Qt Designer UI文件
 │   ├── adminwindow.ui
 │   ├── userwindow.ui
-│   ├── registerwindow.ui
-│   └── forgetpasswordwindow.ui
-├── resources/             # 资源文件
+│   ├── ...（其他UI文件）
+├── resources/              # 资源文件
 │   └── img/
-│       ├── img.qrc
 │       ├── IOT.png
 │       ├── IOTmanagement.png
 │       └── monitorcenter.png
-├── docs/                  # 文档
+├── docs/                   # 文档
 │   ├── README.md
 │   ├── 功能说明.md
 │   ├── 数据库使用说明.md
 │   └── 数据库初始化脚本.sql
-├── InternetMonitoring.pro # Qt项目文件
-├── CMakeLists.txt        # CMake配置文件
-└── internetmonitoring.db # SQLite数据库文件（运行时生成）
+├── InternetMonitoring.pro  # Qt项目文件
+├── CMakeLists.txt          # CMake配置文件
+└── internetmonitoring.db   # SQLite数据库（运行时生成）
 ```
 
 ## 编译和运行
 
 ### 使用Qt Creator
 1. 打开 `InternetMonitoring.pro` 文件
-2. 配置项目（选择编译器）
-3. 点击运行按钮
+2. 配置项目（选择合适的编译器）
+3. 构建并运行
 
 ### 使用命令行
 ```bash
@@ -99,7 +91,29 @@ sqlite3 internetmonitoring.db < docs/数据库初始化脚本.sql
 
 ### 默认账户
 - **管理员账户**: admin / admin123
-- **测试用户账户**: jack / user123
+- **测试用户账户**: jack / Jack123
+
+## 主要功能
+
+### 管理员界面
+
+- 用户管理（增删改查）
+- 设备管理（分组、增删改查）
+- 网络监控
+- 告警规则管理
+- 告警展示
+- 数据分析
+- 系统日志
+- 权限控制
+
+### 用户界面
+
+- 设备管理（只读）
+- 网络监控（只读）
+- 告警规则（只读）
+- 告警展示（只读）
+- 数据分析（只读）
+- 个人设置（可编辑）
 
 ## 功能测试
 
@@ -143,15 +157,7 @@ g++ -o test_db src/test_database.cpp src/databasemanager.cpp -I include/ -lQt5Co
 
 ## 开发环境
 
-- **Qt版本**: 5.12 或更高
-- **编译器**: MSVC, MinGW, GCC
+- **Qt版本**: 5.14.2 
+- **编译器**:  MinGW
 - **数据库**: SQLite 3
-- **操作系统**: Windows, Linux, macOS
-
-## 许可证
-
-本项目采用MIT许可证，详见LICENSE文件。
-
-## 联系方式
-
-如有问题或建议，请联系开发团队。 
+- **操作系统**: Windows
