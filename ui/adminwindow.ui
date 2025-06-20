@@ -27,14 +27,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="systemSettingsBtn">
-         <property name="text"><string>系统设置</string></property>
-         <property name="toolButtonStyle"><enum>Qt::ToolButtonTextUnderIcon</enum></property>
-         <property name="checkable"><bool>true</bool></property>
-         <property name="autoExclusive"><bool>true</bool></property>
-        </widget>
-       </item>
-       <item>
         <widget class="QToolButton" name="deviceManagementBtn">
          <property name="text"><string>设备管理</string></property>
          <property name="toolButtonStyle"><enum>Qt::ToolButtonTextUnderIcon</enum></property>
@@ -69,6 +61,14 @@
        <item>
         <widget class="QToolButton" name="dataAnalysisBtn">
          <property name="text"><string>数据分析</string></property>
+         <property name="toolButtonStyle"><enum>Qt::ToolButtonTextUnderIcon</enum></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="systemSettingsBtn">
+         <property name="text"><string>系统设置</string></property>
          <property name="toolButtonStyle"><enum>Qt::ToolButtonTextUnderIcon</enum></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>

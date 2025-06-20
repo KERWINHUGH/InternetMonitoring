@@ -20,7 +20,7 @@ class UserManagementPage : public QWidget {
 public:
     UserManagementPage(QWidget* parent = nullptr) : QWidget(parent) {
         QVBoxLayout* layout = new QVBoxLayout(this);
-        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "users" << "device_groups" << "devices");
+        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "users");
         viewer->setWindowFlags(Qt::Widget);
         layout->addWidget(viewer);
         layout->setContentsMargins(0,0,0,0);
@@ -36,6 +36,18 @@ public:
         DeviceManagementWindow* devWin = new DeviceManagementWindow(currentUsername, true, this);
         devWin->setWindowFlags(Qt::Widget);
         layout->addWidget(devWin);
+        layout->setContentsMargins(0,0,0,0);
+    }
+};
+
+// 新增：系统日志页面
+class SystemLogsPage : public QWidget {
+public:
+    SystemLogsPage(QWidget* parent = nullptr) : QWidget(parent) {
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "system_logs");
+        viewer->setWindowFlags(Qt::Widget);
+        layout->addWidget(viewer);
         layout->setContentsMargins(0,0,0,0);
     }
 };
@@ -104,19 +116,31 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     setMinimumSize(900, 650); // 设置一个最小尺寸以保证布局不会错乱
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 
-    ui->systemSettingsBtn->hide();
+    // 复用系统设置按钮作为系统日志按钮
+    ui->systemSettingsBtn->setText("系统日志");
+    ui->systemSettingsBtn->show();
 
     // 优化：为按钮添加图标并设置样式
     ui->sideBarWidget->setMinimumWidth(160);
 
-    QList<QToolButton*> btns = {ui->userManagementBtn, ui->deviceManagementBtn, ui->networkMonitorBtn, ui->alarmRuleManagementBtn, ui->alarmDisplayBtn, ui->dataAnalysisBtn};
+    // 按钮顺序需要和UI文件以及页面索引严格对应
+    QList<QToolButton*> btns = {
+        ui->userManagementBtn,      // 0
+        ui->deviceManagementBtn,    // 1
+        ui->networkMonitorBtn,      // 2
+        ui->alarmRuleManagementBtn, // 3
+        ui->alarmDisplayBtn,        // 4
+        ui->dataAnalysisBtn,        // 5
+        ui->systemSettingsBtn       // 6 -> 现在在数据分析下方
+    };
     QList<QStyle::StandardPixmap> icons = {
         QStyle::SP_DirHomeIcon,           // 用户管理
         QStyle::SP_ComputerIcon,          // 设备管理
         QStyle::SP_DriveNetIcon,          // 网络监控
         QStyle::SP_FileIcon,              // 报警规则
         QStyle::SP_MessageBoxWarning,     // 报警显示
-        QStyle::SP_FileDialogDetailedView // 数据分析
+        QStyle::SP_FileDialogDetailedView, // 数据分析
+        QStyle::SP_DialogApplyButton      // 系统日志
     };
 
     sideBarGroup = new QButtonGroup(this);
@@ -217,6 +241,7 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     AlarmRuleManagementPage* alarmRulePage = new AlarmRuleManagementPage(this);
     AlarmDisplayPage* alarmDisplayPage = new AlarmDisplayPage(this);
     DataAnalysisPage* dataAnalysisPage = new DataAnalysisPage(this);
+    SystemLogsPage* logsPage = new SystemLogsPage(this);
 
     ui->mainStackedWidget->addWidget(userPage);         // index 0
     ui->mainStackedWidget->addWidget(devicePage);       // index 1
@@ -224,6 +249,7 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     ui->mainStackedWidget->addWidget(alarmRulePage);    // index 3
     ui->mainStackedWidget->addWidget(alarmDisplayPage); // index 4
     ui->mainStackedWidget->addWidget(dataAnalysisPage); // index 5
+    ui->mainStackedWidget->addWidget(logsPage);         // index 6
 
     // 设置默认显示设备管理页面
     ui->deviceManagementBtn->click();
