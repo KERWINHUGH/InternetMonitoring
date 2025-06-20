@@ -19,12 +19,11 @@ DatabaseViewer::~DatabaseViewer()
 {
 }
 
-DatabaseViewer::DatabaseViewer(QWidget *parent, const QStringList& tables)
-    : QMainWindow(parent), customTables(tables)
+DatabaseViewer::DatabaseViewer(QWidget *parent, const QStringList& tables, bool readonly)
+    : QMainWindow(parent), customTables(tables), m_readonly(readonly)
 {
     setupUI();
     if (!customTables.isEmpty()) {
-        // 如果只提供一个表，则隐藏选择框
         if (customTables.count() == 1) {
             tableLabel->hide();
             tableComboBox->hide();
@@ -38,7 +37,6 @@ DatabaseViewer::DatabaseViewer(QWidget *parent, const QStringList& tables)
 void DatabaseViewer::setupUI()
 {
     setWindowTitle("数据库查看器");
-    // setFixedSize(800, 600); // 移除固定大小，使其可缩放
     setMinimumSize(800, 600);
 
     centralWidget = new QWidget(this);
@@ -47,13 +45,11 @@ void DatabaseViewer::setupUI()
     mainLayout = new QVBoxLayout(centralWidget);
     controlLayout = new QHBoxLayout();
 
-    // 创建控件
     tableLabel = new QLabel("选择表:", this);
-
     tableComboBox = new QComboBox(this);
     QSqlDatabase db = QSqlDatabase::database();
     QStringList tables = db.tables();
-    tables.removeDuplicates(); // 去重
+    tables.removeDuplicates();
     for (int i = tables.size() - 1; i >= 0; --i) {
         if (tables[i].startsWith("sqlite_", Qt::CaseInsensitive)) {
             tables.removeAt(i);
@@ -68,36 +64,42 @@ void DatabaseViewer::setupUI()
     saveButton = new QPushButton("保存更改", this);
     statusLabel = new QLabel("就绪", this);
 
-    // 添加到控制布局
     controlLayout->addWidget(tableLabel);
     controlLayout->addWidget(tableComboBox);
     controlLayout->addWidget(refreshButton);
     controlLayout->addWidget(exportButton);
-    controlLayout->addWidget(addButton);
-    controlLayout->addWidget(deleteButton);
-    controlLayout->addWidget(saveButton);
+    if (!m_readonly) {
+        controlLayout->addWidget(addButton);
+        controlLayout->addWidget(deleteButton);
+        controlLayout->addWidget(saveButton);
+    } else {
+        addButton->hide();
+        deleteButton->hide();
+        saveButton->hide();
+    }
     controlLayout->addStretch();
     controlLayout->addWidget(statusLabel);
 
-    // 创建数据表格
     dataTable = new QTableWidget(this);
     dataTable->setAlternatingRowColors(true);
     dataTable->horizontalHeader()->setStretchLastSection(true);
     dataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    if (m_readonly) {
+        dataTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    }
 
-    // 添加到主布局
     mainLayout->addLayout(controlLayout);
     mainLayout->addWidget(dataTable);
 
-    // 连接信号槽
-    connect(tableComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &DatabaseViewer::onTableChanged);
+    connect(tableComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DatabaseViewer::onTableChanged);
     connect(refreshButton, &QPushButton::clicked, this, &DatabaseViewer::onRefreshClicked);
     connect(exportButton, &QPushButton::clicked, this, &DatabaseViewer::onExportClicked);
-    connect(addButton, &QPushButton::clicked, this, &DatabaseViewer::onAddClicked);
-    connect(deleteButton, &QPushButton::clicked, this, &DatabaseViewer::onDeleteClicked);
-    connect(saveButton, &QPushButton::clicked, this, &DatabaseViewer::onSaveChangesClicked);
-    connect(dataTable, &QTableWidget::cellChanged, this, &DatabaseViewer::onCellChanged);
+    if (!m_readonly) {
+        connect(addButton, &QPushButton::clicked, this, &DatabaseViewer::onAddClicked);
+        connect(deleteButton, &QPushButton::clicked, this, &DatabaseViewer::onDeleteClicked);
+        connect(saveButton, &QPushButton::clicked, this, &DatabaseViewer::onSaveChangesClicked);
+        connect(dataTable, &QTableWidget::cellChanged, this, &DatabaseViewer::onCellChanged);
+    }
 }
 
 void DatabaseViewer::onTableChanged()

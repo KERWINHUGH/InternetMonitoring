@@ -2,12 +2,13 @@
 #define USERWINDOW_H
 
 #include <QMainWindow>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QLabel>
+#include <QButtonGroup>
+#include <QToolButton>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QStackedWidget>
 #include <QWidget>
+#include <QString>
+#include <QPushButton>
 
 // 前向声明
 class ProfileWindow;
@@ -29,17 +30,20 @@ signals:
     void windowClosed();  // 窗口关闭信号
 
 private slots:
-    void onMonitoringClicked();
-    void onPersonalSettingsClicked();
+    void onSidebarButtonClicked(int index);
     void onLogoutClicked();
-    void onCloseClicked();
+    void onExitClicked();
     void onProfileUpdated();
 
 private:
     Ui::UserWindow *ui;
-    ProfileWindow *profileWindow;
-    DatabaseViewer *databaseViewer;
+    QButtonGroup* sideBarGroup;
+    QStackedWidget* mainStackedWidget;
+    QWidget* sideBarWidget;
+    QToolButton *deviceManagementBtn, *networkMonitorBtn, *alarmRuleManagementBtn, *alarmDisplayBtn, *dataAnalysisBtn, *profileBtn;
+    QPushButton *logoutBtn, *exitBtn;
     QString currentUsername;
+    ProfileWindow *profileWindow;
 };
 
 #endif // USERWINDOW_H 

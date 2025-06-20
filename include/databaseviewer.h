@@ -20,7 +20,7 @@ class DatabaseViewer : public QMainWindow
 
 public:
 //    explicit DatabaseViewer(QWidget *parent = nullptr);
-    explicit DatabaseViewer(QWidget *parent = nullptr, const QStringList& tables = QStringList());
+    explicit DatabaseViewer(QWidget *parent = nullptr, const QStringList& tables = QStringList(), bool readonly = false);
     ~DatabaseViewer();
 
 private slots:
@@ -59,6 +59,7 @@ private:
     QLabel *statusLabel; // 状态标签
     QStringList customTables;   // 自定义表
     QMap<int, QVariantMap> changedRows; // 跟踪已更改的行
+    bool m_readonly = false;
 };
 
 #endif // DATABASEVIEWER_H 
