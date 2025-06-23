@@ -1,7 +1,7 @@
 #ifndef DATABASEVIEWER_H
 #define DATABASEVIEWER_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include <QTableWidget>
 #include <QComboBox>
 #include <QPushButton>
@@ -13,13 +13,13 @@
 #include <QRegularExpression>
 #include <QMap>
 #include <QVariantMap>
+#include "UserEditDialog.h"
 
-class DatabaseViewer : public QMainWindow
+class DatabaseViewer : public QWidget
 {
     Q_OBJECT
 
 public:
-//    explicit DatabaseViewer(QWidget *parent = nullptr);
     explicit DatabaseViewer(QWidget *parent = nullptr, const QStringList& tables = QStringList(), bool readonly = false);
     ~DatabaseViewer();
 
@@ -29,8 +29,10 @@ private slots:
     void onExportClicked();
     void onAddClicked();
     void onDeleteClicked();
+    void onEditClicked();
     void onSaveChangesClicked();
     void onCellChanged(int row, int column);
+    void onCellDoubleClicked(int row, int column);
 
 private:
     void setupUI();
@@ -45,7 +47,8 @@ private:
     void displayAlarmRecords();
     void displayDeviceGroups();
 
-    QWidget *centralWidget;     // 主窗口
+    void showUserEditDialog(int row = -1);
+
     QVBoxLayout *mainLayout; // 主布局
     QHBoxLayout *controlLayout; // 控制布局
     QLabel *tableLabel; // "选择表"标签

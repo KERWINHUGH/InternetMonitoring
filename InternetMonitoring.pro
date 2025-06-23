@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,7 +31,9 @@ SOURCES += \
     src/NetworkMonitorWindow.cpp \
     src/AlarmRuleManagementWindow.cpp \
     src/AlarmDisplayWindow.cpp \
-    src/DataAnalysisWindow.cpp
+    src/DataAnalysisWindow.cpp \
+    src/UserEditDialog.cpp \
+    src/alarmruleeditdialog.cpp
 
 
 HEADERS += \
@@ -49,7 +51,9 @@ HEADERS += \
     include/NetworkMonitorWindow.h \
     include/AlarmRuleManagementWindow.h \
     include/AlarmDisplayWindow.h \
-    include/DataAnalysisWindow.h
+    include/DataAnalysisWindow.h \
+    include/UserEditDialog.h \
+    include/alarmruleeditdialog.h
 
 FORMS += \
     ui/AlarmDisplayPage.ui \
@@ -62,8 +66,6 @@ FORMS += \
     ui/ProfileWindow.ui \
     ui/SystemSettingsDialog.ui \
     ui/SystemSettingsPage.ui \
-    ui/UserManagementPage.ui \
-    ui/UserManagementWindow.ui \
     ui/forgetpasswordwindow.ui \
     ui/mainwindow.ui \
     ui/adminwindow.ui \

@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QStackedWidget>
 #include <QToolButton>
+#include <QCloseEvent>
 
 // 前向声明
 class DatabaseViewer;
@@ -34,6 +35,9 @@ public:
 
 signals:
     void windowClosed();  // 窗口关闭信号
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void onUserManagementClicked();

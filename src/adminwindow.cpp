@@ -15,18 +15,6 @@
 #include <QIcon>
 #include <QStyle>
 
-// 用户管理页面集成DatabaseViewer
-class UserManagementPage : public QWidget {
-public:
-    UserManagementPage(QWidget* parent = nullptr) : QWidget(parent) {
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        DatabaseViewer* viewer = new DatabaseViewer(this, QStringList() << "users");
-        viewer->setWindowFlags(Qt::Widget);
-        layout->addWidget(viewer);
-        layout->setContentsMargins(0,0,0,0);
-    }
-};
-
 // 设备管理页面集成DeviceManagementWindow
 class DeviceManagementPage : public QWidget {
 public:
@@ -227,6 +215,14 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     // 按钮与页面切换
     connect(sideBarGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &AdminWindow::smoothSwitchToPage);
 
+    // 将各个按钮的点击事件连接到对应的槽函数
+    connect(ui->userManagementBtn, &QToolButton::clicked, this, &AdminWindow::onUserManagementClicked);
+    connect(ui->deviceManagementBtn, &QToolButton::clicked, this, &AdminWindow::onDeviceManagementClicked);
+    connect(ui->networkMonitorBtn, &QToolButton::clicked, this, &AdminWindow::onNetworkMonitorClicked);
+    connect(ui->alarmRuleManagementBtn, &QToolButton::clicked, this, &AdminWindow::onAlarmRuleManagementClicked);
+    connect(ui->alarmDisplayBtn, &QToolButton::clicked, this, &AdminWindow::onAlarmDisplayClicked);
+    connect(ui->dataAnalysisBtn, &QToolButton::clicked, this, &AdminWindow::onDataAnalysisClicked);
+
     // 信号槽连接
     connect(ui->logoutBtn, &QPushButton::clicked, this, &AdminWindow::onLogoutClicked);
     connect(ui->exitBtn, &QPushButton::clicked, this, &AdminWindow::onExitClicked);
@@ -235,7 +231,7 @@ AdminWindow::AdminWindow(const QString& currentUsername, QWidget *parent)
     // statusBar()->showMessage("管理员控制台已就绪");
 
     // 实例化功能页面并添加到QStackedWidget
-    UserManagementPage* userPage = new UserManagementPage(this);
+    DatabaseViewer* userPage = new DatabaseViewer(this, QStringList() << "users");
     DeviceManagementPage* devicePage = new DeviceManagementPage(currentUsername, this);
     NetworkMonitorPage* networkPage = new NetworkMonitorPage(this);
     AlarmRuleManagementPage* alarmRulePage = new AlarmRuleManagementPage(this);
@@ -280,12 +276,7 @@ AdminWindow::~AdminWindow()
 
 void AdminWindow::onUserManagementClicked()
 {
-    if (!databaseViewer) {
-        databaseViewer = new DatabaseViewer(this, QStringList() << "users");
-    }
-    databaseViewer->show();
-    databaseViewer->raise();
-    databaseViewer->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(0);
 }
 
 void AdminWindow::onLogoutClicked()
@@ -309,82 +300,64 @@ void AdminWindow::onExitClicked()
 
 void AdminWindow::onDeviceManagementClicked()
 {
-    if (!deviceManagementWindow) {
-        deviceManagementWindow = new DeviceManagementWindow(currentUsername, true, this);
-    }
-    deviceManagementWindow->show();
-    deviceManagementWindow->raise();
-    deviceManagementWindow->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(1);
 }
 
 void AdminWindow::onNetworkMonitorClicked()
 {
-    if (!networkMonitorWindow) {
-        networkMonitorWindow = new NetworkMonitorWindow(this);
-    }
-    networkMonitorWindow->show();
-    networkMonitorWindow->raise();
-    networkMonitorWindow->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(2);
 }
 
 void AdminWindow::onAlarmRuleManagementClicked()
 {
-    if (!alarmRuleManagementWindow) {
-        alarmRuleManagementWindow = new AlarmRuleManagementWindow(this);
-    }
-    alarmRuleManagementWindow->show();
-    alarmRuleManagementWindow->raise();
-    alarmRuleManagementWindow->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(3);
 }
 
 void AdminWindow::onAlarmDisplayClicked()
 {
-    if (!alarmDisplayWindow) {
-        alarmDisplayWindow = new AlarmDisplayWindow(this);
-    }
-    alarmDisplayWindow->show();
-    alarmDisplayWindow->raise();
-    alarmDisplayWindow->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(4);
 }
 
 void AdminWindow::onDataAnalysisClicked()
 {
-    if (!dataAnalysisWindow) {
-        dataAnalysisWindow = new DataAnalysisWindow(this);
-    }
-    dataAnalysisWindow->show();
-    dataAnalysisWindow->raise();
-    dataAnalysisWindow->activateWindow();
+    ui->mainStackedWidget->setCurrentIndex(5);
 }
 
 void AdminWindow::smoothSwitchToPage(int pageIndex) {
-    // 确保按钮状态和页面同步
-    if(qobject_cast<QToolButton*>(sideBarGroup->button(pageIndex))) {
-        qobject_cast<QToolButton*>(sideBarGroup->button(pageIndex))->setChecked(true);
-    }
-    
-    QWidget* current = ui->mainStackedWidget->currentWidget();
-    QWidget* next = ui->mainStackedWidget->widget(pageIndex);
-    if (current == next) return;
-    int w = ui->mainStackedWidget->width();
-    next->setGeometry(w, 0, next->width(), next->height());
-    next->show();
-    QPropertyAnimation* animOut = new QPropertyAnimation(current, "geometry");
-    animOut->setDuration(300);
-    animOut->setStartValue(current->geometry());
-    animOut->setEndValue(QRect(-w, 0, current->width(), current->height()));
-    QPropertyAnimation* animIn = new QPropertyAnimation(next, "geometry");
-    animIn->setDuration(300);
-    animIn->setStartValue(QRect(w, 0, next->width(), next->height()));
-    animIn->setEndValue(QRect(0, 0, next->width(), next->height()));
-    QParallelAnimationGroup* group = new QParallelAnimationGroup;
-    group->addAnimation(animOut);
-    group->addAnimation(animIn);
-    connect(group, &QParallelAnimationGroup::finished, this, [=]() {
+    if (ui->mainStackedWidget->currentIndex() == pageIndex) return;
+
+    QWidget* currentPage = ui->mainStackedWidget->widget(ui->mainStackedWidget->currentIndex());
+    QWidget* nextPage = ui->mainStackedWidget->widget(pageIndex);
+
+    if (!currentPage || !nextPage) return;
+
+    // 创建淡出动画
+    QPropertyAnimation* fadeOut = new QPropertyAnimation(currentPage, "windowOpacity");
+    fadeOut->setDuration(150);
+    fadeOut->setStartValue(1.0);
+    fadeOut->setEndValue(0.0);
+    connect(fadeOut, &QPropertyAnimation::finished, [=]() {
         ui->mainStackedWidget->setCurrentIndex(pageIndex);
-        current->hide();
-        next->setGeometry(0, 0, next->width(), next->height());
-        group->deleteLater();
     });
+
+    // 创建淡入动画
+    QPropertyAnimation* fadeIn = new QPropertyAnimation(nextPage, "windowOpacity");
+    fadeIn->setDuration(150);
+    fadeIn->setStartValue(0.0);
+    fadeIn->setEndValue(1.0);
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+    group->addAnimation(fadeOut);
+    group->addAnimation(fadeIn);
+
+    connect(group, &QParallelAnimationGroup::finished, [group](){
+        delete group; // 动画结束后清理
+    });
+
     group->start();
+}
+
+void AdminWindow::closeEvent(QCloseEvent *event) {
+    onExitClicked();
+    event->ignore(); // 阻止窗口立即关闭，由onExitClicked中的逻辑决定
 }

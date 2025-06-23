@@ -23,12 +23,6 @@ DatabaseManager::~DatabaseManager()
     QSqlDatabase::removeDatabase(connectionName);  // 从连接池中移除
 }
 
-DatabaseManager& DatabaseManager::instance()
-{
-    static DatabaseManager instance;
-    return instance;
-}
-
 bool DatabaseManager::dropTables()
 {
     QStringList tables = {"users", "devices", "monitor_data", "alarm_rules", "alarm_records", "system_logs"};
@@ -198,6 +192,7 @@ bool DatabaseManager::addUser(const QString& username, const QString& password,
                 const QString& email, const QString& phone,
                 const QString& nickname, const QString& role)
 {
+    qDebug() << "addUser called:" << username << email << phone;
     QSqlQuery query;
     query.prepare("INSERT INTO users (username, password, email, phone, nickname, role) "
                   "VALUES (?, ?, ?, ?, ?, ?)");
@@ -218,6 +213,7 @@ bool DatabaseManager::addUser(const QString& username, const QString& password,
 bool DatabaseManager::updateUser(int user_id, const QString& email,
                    const QString& phone, const QString& nickname)
 {
+    qDebug() << "updateUser called:" << user_id << email << phone << nickname;
     QSqlQuery query;
     query.prepare("UPDATE users SET email=?, phone=?, nickname=? WHERE user_id=?");
     query.addBindValue(email);
@@ -239,6 +235,7 @@ bool DatabaseManager::updatePassword(int user_id, const QString& newPassword)
 
 bool DatabaseManager::deleteUser(int user_id)
 {
+    qDebug() << "deleteUser called:" << user_id;
     QSqlQuery query;
     query.prepare("DELETE FROM users WHERE user_id=?");
     query.addBindValue(user_id);
@@ -425,10 +422,11 @@ bool DatabaseManager::addAlarmRule(int device_id, const QString& description, co
     return query.exec();
 }
 
-bool DatabaseManager::updateAlarmRule(int rule_id, const QString& description, const QString& condition, const QString& action)
+bool DatabaseManager::updateAlarmRule(int rule_id, int device_id, const QString& description, const QString& condition, const QString& action)
 {
     QSqlQuery query;
-    query.prepare("UPDATE alarm_rules SET description=?, condition=?, action=? WHERE rule_id=?");
+    query.prepare("UPDATE alarm_rules SET device_id=?, description=?, condition=?, action=? WHERE rule_id=?");
+    query.addBindValue(device_id);
     query.addBindValue(description);
     query.addBindValue(condition);
     query.addBindValue(action);
@@ -493,6 +491,56 @@ QVariantList DatabaseManager::getAlarmRecords(int device_id)
             records.append(record);
         }
     }
+    return records;
+}
+
+QVariantList DatabaseManager::getAlarmRecordsFiltered(int device_id, const QString& status, const QDateTime& startTime, const QDateTime& endTime)
+{
+    QVariantList records;
+    QString sql = "SELECT alarm_id, device_id, timestamp, content, status, note FROM alarm_records WHERE 1=1";
+    
+    if (device_id != -1) {
+        sql += " AND device_id = :device_id";
+    }
+    if (!status.isEmpty()) {
+        sql += " AND status = :status";
+    }
+    if (startTime.isValid() && endTime.isValid()) {
+        sql += " AND timestamp BETWEEN :startTime AND :endTime";
+    }
+    
+    sql += " ORDER BY timestamp DESC";
+
+    QSqlQuery query;
+    query.prepare(sql);
+
+    if (device_id != -1) {
+        query.bindValue(":device_id", device_id);
+    }
+    if (!status.isEmpty()) {
+        query.bindValue(":status", status);
+    }
+    if (startTime.isValid() && endTime.isValid()) {
+        query.bindValue(":startTime", startTime);
+        query.bindValue(":endTime", endTime);
+    }
+
+    if (!query.exec()) {
+        setLastError("获取过滤后的告警记录失败: " + query.lastError().text());
+        return records;
+    }
+
+    while (query.next()) {
+        QVariantMap record;
+        record["alarm_id"] = query.value("alarm_id");
+        record["device_id"] = query.value("device_id");
+        record["timestamp"] = query.value("timestamp");
+        record["content"] = query.value("content");
+        record["status"] = query.value("status");
+        record["note"] = query.value("note");
+        records.append(record);
+    }
+
     return records;
 }
 

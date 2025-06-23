@@ -14,7 +14,11 @@ class DatabaseManager : public QObject
     Q_OBJECT
 
 public:
-    static DatabaseManager& instance();
+    static DatabaseManager& instance()
+    {
+        static DatabaseManager instance;
+        return instance;
+    }
     bool initDatabase();
 
     // 数据库状态
@@ -57,13 +61,14 @@ public:
 
     // 告警规则
     bool addAlarmRule(int device_id, const QString& description, const QString& condition, const QString& action);
-    bool updateAlarmRule(int rule_id, const QString& description, const QString& condition, const QString& action);
+    bool updateAlarmRule(int rule_id, int device_id, const QString& description, const QString& condition, const QString& action);
     bool deleteAlarmRule(int rule_id);
     QVariantList getAlarmRules(int device_id);
 
     // 告警记录
     bool addAlarmRecord(int device_id, const QDateTime& timestamp, const QString& content, const QString& status, const QString& note);
     QVariantList getAlarmRecords(int device_id);
+    QVariantList getAlarmRecordsFiltered(int device_id, const QString& status, const QDateTime& startTime, const QDateTime& endTime);
 
     // 系统日志
     bool addLog(const QString& log_type, const QString& log_level, const QString& content,
